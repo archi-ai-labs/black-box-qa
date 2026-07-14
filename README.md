@@ -1,7 +1,9 @@
 # 🔍 Black-box QA Agent Dashboard
 
-> **Agentic QA Tool** — Tự động hóa kiểm thử hộp đen (Black-box Testing) với sự hỗ trợ của AI Agent (Antigravity).  
-> Built with **Next.js 15**, **TypeScript**, và tích hợp **Antigravity Agent Skills**.
+> **Agentic QA Tool** — Automates black-box testing with AI Agent support (Antigravity).  
+> Built with **Next.js 15**, **TypeScript**, and integrated **Antigravity Agent Skills**.
+
+**🌐 Language / Ngôn ngữ:** [English](./README.md) · [Tiếng Việt](./README.vi.md)
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
@@ -9,22 +11,22 @@
 
 ---
 
-## ✨ Tính Năng Nổi Bật
+## ✨ Key Features
 
-| Tính năng | Mô tả |
+| Feature | Description |
 |---|---|
-| 📊 **QA Dashboard** | Xem kết quả test theo phiên chạy, phân loại theo Catalog (AUTH, SECURITY, RATE_LIMIT...) |
-| 🧠 **Agent Memory** | Shared Memory — AI ghi nhớ patterns lỗi, quy tắc làm việc giữa các phiên |
-| 💡 **Prompt Extractor** | Copy ngay prompt tối ưu để gửi cho AI trích xuất đặc tả API hoặc sinh test cases |
-| 🖼️ **UI Test Screenshots** | Xem ảnh chụp từng bước khi chạy test giao diện (Playwright/Puppeteer) |
-| ⚡ **Auto Polling** | Dashboard tự động cập nhật kết quả mỗi 3 giây |
-| 🤖 **Antigravity Skills** | Tích hợp sẵn 2 skill AI để trích xuất context QA và sinh test requirements |
+| 📊 **QA Dashboard** | View test results per run, organized by Catalog (AUTH, SECURITY, RATE_LIMIT...) |
+| 🧠 **Agent Memory** | Shared Memory — AI retains error patterns and working rules across sessions |
+| 💡 **Prompt Extractor** | One-click copy of optimized prompts for AI to extract API specs or generate test cases |
+| 🖼️ **UI Test Screenshots** | View step-by-step screenshots from UI test runs (Playwright/Puppeteer) |
+| ⚡ **Auto Polling** | Dashboard auto-refreshes results every 3 seconds |
+| 🤖 **Antigravity Skills** | 2 built-in AI skills for QA context extraction and test requirement generation |
 
 ---
 
 ## 🚀 Quick Start
 
-### 1. Clone & Cài đặt
+### 1. Clone & Install
 
 ```bash
 git clone https://github.com/archi-ai-labs/black-box-qa.git
@@ -32,50 +34,52 @@ cd black-box-qa
 npm install
 ```
 
-### 2. Cấu hình môi trường (nếu cần)
+### 2. Configure Environment (if needed)
 
 ```bash
 cp .env.example .env
-# Chỉnh sửa .env với API key của project bạn muốn test
+# Edit .env with your project's API key or credentials
 ```
 
-### 3. Chạy Dashboard
+### 3. Run the Dashboard
 
 ```bash
 npm run dev
 ```
 
-Mở trình duyệt tại [http://localhost:3000](http://localhost:3000)
+Open your browser at [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 📁 Cách Thêm Project Mới
+## 📁 Adding a New Project
 
-### 1. Thêm vào `data/projects.json`
+### 1. Add an entry to `data/projects.json`
 
 ```json
 {
   "id": "project-myapp",
   "name": "My App API",
-  "description": "Mô tả ngắn về project",
+  "description": "Short description of the project",
   "targetUrl": "http://localhost:8080/health",
   "type": "api"
 }
 ```
 
-### 2. Tạo thư mục kết quả
+`type` can be `"api"` or `"ui-test"`.
+
+### 2. Create the results directory
 
 ```bash
 mkdir -p data/project-myapp
 ```
 
-### 3. AI Agent ghi kết quả vào `data/project-myapp/results.json`
+### 3. AI Agent writes results to `data/project-myapp/results.json`
 
-Xem file [`data/project-demo/results.json`](./data/project-demo/results.json) để biết format chuẩn.
+See [`data/project-demo/results.json`](./data/project-demo/results.json) for the expected format.
 
 ---
 
-## 🗂️ Cấu Trúc Dữ Liệu (`results.json`)
+## 🗂️ Data Format (`results.json`)
 
 ```json
 {
@@ -90,14 +94,14 @@ Xem file [`data/project-demo/results.json`](./data/project-demo/results.json) đ
       "summary": { "total": 10, "passed": 9, "failed": 1 },
       "testCases": [
         {
-          "name": "TC_AUTH_001: Đăng nhập thành công",
+          "name": "TC_AUTH_001: Successful login",
           "catalog": "AUTH",
           "status": "PASS",
           "statusCode": 200,
           "durationMs": 124,
           "request": { "method": "POST", "url": "/api/login", "body": {} },
           "response": { "status": 200, "body": {} },
-          "passCondition": "Status 200 và response chứa accessToken"
+          "passCondition": "Status 200 and response contains accessToken"
         }
       ]
     }
@@ -105,39 +109,39 @@ Xem file [`data/project-demo/results.json`](./data/project-demo/results.json) đ
 }
 ```
 
-**Catalog hỗ trợ:** `AUTH` · `API_KEY` · `ENERGY` · `TRANSACTION` · `SECURITY` · `RATE_LIMIT` · `CONCURRENCY` · `CLEANUP` · `HEALTH` · `GENERAL`
+**Supported Catalogs:** `AUTH` · `API_KEY` · `ENERGY` · `TRANSACTION` · `SECURITY` · `RATE_LIMIT` · `CONCURRENCY` · `CLEANUP` · `HEALTH` · `GENERAL`
 
 ---
 
 ## 🤖 Antigravity Agent Skills
 
-Thư mục `.agents/skills/` chứa 2 skill tích hợp với [Antigravity AI](https://antigravity.dev):
+The `.agents/skills/` directory contains 2 skills for use with [Antigravity AI](https://antigravity.dev):
 
 ### `extract-qa-context`
-Gửi prompt tối ưu cho AI để **trích xuất đặc tả hệ thống** từ codebase (API endpoints, auth flows, request/response format).
+Sends an optimized prompt to the AI to **extract system specifications** from a codebase (API endpoints, auth flows, request/response formats).
 
-### `extract-test-requirements`  
-Gửi prompt tối ưu cho AI để **tự động sinh danh sách test cases** phân nhóm theo Catalog, kèm điều kiện Pass.
+### `extract-test-requirements`
+Sends an optimized prompt to the AI to **automatically generate test cases** grouped by Catalog, each with a defined Pass Condition.
 
-> Sử dụng tab **💡 Trích xuất Prompt** trên Dashboard để copy prompt và paste vào Antigravity IDE.
+> Use the **💡 Extract Prompt** tab on the Dashboard to copy the prompt and paste it into Antigravity IDE.
 
 ---
 
-## 📂 Cấu Trúc Project
+## 📂 Project Structure
 
 ```
 black-box-qa/
 ├── src/
 │   └── app/
-│       ├── page.tsx              # Dashboard UI chính
+│       ├── page.tsx              # Main dashboard UI
 │       ├── globals.css           # Design system
 │       └── api/
-│           ├── projects/         # GET danh sách projects
-│           ├── status/           # GET kết quả test
-│           ├── run-tests/        # POST trigger chạy test
-│           └── shared-memory/    # GET/POST bộ nhớ agent
+│           ├── projects/         # GET project list
+│           ├── status/           # GET test results
+│           ├── run-tests/        # POST trigger test run
+│           └── shared-memory/    # GET/POST agent memory
 ├── data/
-│   ├── projects.json             # Danh sách projects
+│   ├── projects.json             # Project registry
 │   ├── project-demo/             # Sample data (mock server)
 │   ├── project-ecommerce/        # Showcase: E-Commerce API
 │   ├── project-fintech/          # Showcase: Payment Gateway
@@ -147,7 +151,7 @@ black-box-qa/
 │   └── skills/                   # Antigravity QA Skills
 │       ├── extract-qa-context/
 │       └── extract-test-requirements/
-├── .env.example                  # Template cấu hình
+├── .env.example                  # Environment template
 └── README.md
 ```
 
@@ -155,12 +159,12 @@ black-box-qa/
 
 ## 🛠️ API Endpoints
 
-| Method | Path | Mô tả |
+| Method | Path | Description |
 |---|---|---|
-| `GET` | `/api/projects` | Lấy danh sách projects (kèm lastUpdated) |
-| `GET` | `/api/status?projectId=<id>` | Lấy kết quả test của project |
-| `POST` | `/api/run-tests` | Trigger chạy test (`{ projectId }`) |
-| `GET` | `/api/shared-memory` | Lấy nội dung bộ nhớ agent |
+| `GET` | `/api/projects` | Get project list (with lastUpdated) |
+| `GET` | `/api/status?projectId=<id>` | Get test results for a project |
+| `POST` | `/api/run-tests` | Trigger a test run (`{ projectId }`) |
+| `GET` | `/api/shared-memory` | Get agent memory content |
 
 ---
 
