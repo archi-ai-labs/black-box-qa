@@ -38,12 +38,18 @@ yarn-error.log*
 CLAUDE.md
 
 # ==============================
-# QA Runtime Data — project thật (không commit lên GitHub)
+# QA Runtime Data
 # ==============================
+# Bỏ qua tất cả các project thật sinh ra trong runtime
+/data/*
 
-# Project savefee có endpoint thật (api-dev.savefee.io)
-/data/project-savefee/
-/data/project-tronsave/
+# GIỮ LẠI các project mẫu (templates)
+!/data/projects.json
+!/data/project-demo/
+!/data/project-ecommerce/
+!/data/project-fintech/
+!/data/project-saas/
+!/data/project-custom/
 
 # Bộ nhớ agent nội bộ (phiên làm việc)
 shared_memory.md
