@@ -183,7 +183,7 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
                 checked={autoExpand}
                 onChange={(e) => setAutoExpand(e.target.checked)}
               />
-              Auto Expand
+              Tự động mở rộng chi tiết
             </label>
           </div>
         )}
@@ -193,7 +193,7 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
             (() => {
               const filtered = activeRun.testCases.filter(tc => statusFilter === 'ALL' || tc.status === statusFilter);
               if (filtered.length === 0) {
-                return <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>No test cases match the filter.</div>;
+                return <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>Không có ca kiểm thử nào khớp với bộ lọc.</div>;
               }
 
               const grouped: Record<string, TestCase[]> = {};
@@ -246,82 +246,192 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
                           const hasFailed = tc.status === 'FAIL';
                           const tcIdMatch = tc.name.match(/^(TC_[A-Z0-9_]+)/);
                           const tcId = tcIdMatch ? tcIdMatch[1] : tc.name;
+                          const isSelectedForCopy = waitingList.has(tcId);
                           
                           return (
-                            <div key={tc.name + tcIdx} style={{
-                              background: 'rgba(255,255,255,0.02)',
-                              border: '1px solid rgba(255,255,255,0.05)',
-                              borderRadius: '8px',
-                              marginBottom: '0.5rem',
-                              overflow: 'hidden'
-                            }}>
+                            <div key={tc.name + tcIdx} className="test-case-item">
                               <div 
+                                className="test-case-header" 
                                 onClick={() => handleToggleTest(tc.name)}
                                 style={{
-                                  padding: '0.75rem 1rem',
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '1rem',
-                                  borderLeft: hasFailed ? '4px solid #f43f5e' : '4px solid #10b981',
-                                  background: isExpanded ? 'rgba(255,255,255,0.05)' : 'transparent'
+                                  borderLeft: hasFailed ? '4px solid hsl(var(--color-error))' : '4px solid hsl(var(--color-success))',
+                                  background: isExpanded ? 'rgba(255, 255, 255, 0.05)' : 'rgba(30, 41, 59, 0.15)'
                                 }}
                               >
-                                <span style={{
-                                  fontSize: '0.7rem', fontWeight: 'bold', padding: '0.15rem 0.4rem', borderRadius: '4px',
-                                  background: 'rgba(255,255,255,0.1)', color: '#fff'
-                                }}>
-                                  {tc.request.method}
-                                </span>
-                                <span style={{ flex: 1, fontSize: '0.85rem' }}>{tc.name}</span>
-                                <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', opacity: 0.7 }}>{tc.request.url}</span>
-                                <span style={{
-                                  fontSize: '0.7rem', fontWeight: 'bold', padding: '0.15rem 0.4rem', borderRadius: '4px',
-                                  background: hasFailed ? 'rgba(244, 63, 94, 0.2)' : 'rgba(16, 185, 129, 0.2)',
-                                  color: hasFailed ? '#fca5a5' : '#6ee7b7'
-                                }}>
-                                  {tc.status}
-                                </span>
+                                <div className="test-case-title-area" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', flex: 1 }}>
+                                  <span className={`test-case-method method-${tc.request.method.toLowerCase()}`}>
+                                    {tc.request.method}
+                                  </span>
+                                  <span className="test-case-name" style={{ fontSize: '0.875rem' }}>{tc.name}</span>
+                                  
+                                  {/* Nút Chọn ID */}
+                                  <button 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setWaitingList(prev => {
+                                        const newSet = new Set(prev);
+                                        if (newSet.has(tcId)) newSet.delete(tcId);
+                                        else newSet.add(tcId);
+                                        return newSet;
+                                      });
+                                    }}
+                                    style={{
+                                      marginLeft: '0.5rem',
+                                      padding: '0.15rem 0.5rem',
+                                      fontSize: '0.7rem',
+                                      borderRadius: '4px',
+                                      background: isSelectedForCopy ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                                      color: isSelectedForCopy ? '#34d399' : '#94a3b8',
+                                      border: `1px solid ${isSelectedForCopy ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255, 255, 255, 0.1)'}`,
+                                      cursor: 'pointer',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '0.2rem',
+                                      fontWeight: isSelectedForCopy ? 'bold' : 'normal'
+                                    }}
+                                  >
+                                    {isSelectedForCopy ? '✓ Đã chọn ID' : '+ Chọn ID'}
+                                  </button>
+                                </div>
+                                <div className="test-case-meta">
+                                  <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', opacity: 0.7 }}>{tc.request.url}</span>
+                                  <span className={`badge ${hasFailed ? 'badge-error' : 'badge-success'}`}>
+                                    {tc.status}
+                                  </span>
+                                  <span style={{ fontSize: '0.75rem', color: '#64748b', transition: 'transform 0.2s', transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                                    ▼
+                                  </span>
+                                </div>
                               </div>
                               
                               {isExpanded && (
-                                <div style={{ padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div className="test-case-details" style={{ display: 'block' }}>
                                   {tc.errorMsg && (
-                                    <div style={{ background: 'rgba(244,63,94,0.1)', color: '#fca5a5', padding: '0.75rem', borderRadius: '6px', marginBottom: '1rem', fontSize: '0.85rem' }}>
+                                    <div className="error-banner" style={{ marginBottom: '1rem' }}>
                                       {tc.errorMsg}
                                     </div>
                                   )}
-                                  
+
+                                  {/* ĐIỀU KIỆN PASS BLOCK - LUÔN HIỂN THỊ ĐỂ CẢNH BÁO NẾU THIẾU */}
                                   <div style={{
-                                    marginBottom: '1rem', padding: '0.8rem 1rem', borderRadius: '8px',
-                                    background: tc.passCondition ? 'rgba(99, 102, 241, 0.1)' : 'rgba(244, 63, 94, 0.1)',
-                                    border: `1px solid ${tc.passCondition ? 'rgba(99,102,241,0.3)' : 'rgba(244, 63, 94, 0.3)'}`,
-                                    fontSize: '0.85rem'
+                                    marginBottom: '1rem',
+                                    padding: '0.8rem 1rem',
+                                    borderRadius: '8px',
+                                    background: tc.passCondition 
+                                      ? (tc.passCondition.startsWith('[SIMULATED]') ? 'rgba(234, 179, 8, 0.12)' : 'rgba(99, 102, 241, 0.12)')
+                                      : 'rgba(244, 63, 94, 0.08)', // Red background for missing condition
+                                    border: `1px solid ${tc.passCondition 
+                                      ? (tc.passCondition.startsWith('[SIMULATED]') ? 'rgba(234,179,8,0.5)' : 'rgba(99,102,241,0.5)')
+                                      : 'rgba(244, 63, 94, 0.3)'}`,
+                                    boxShadow: tc.passCondition 
+                                      ? (tc.passCondition.startsWith('[SIMULATED]') ? '0 0 12px rgba(234, 179, 8, 0.15)' : '0 0 12px rgba(99, 102, 241, 0.15)')
+                                      : 'none',
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    gap: '0.75rem',
+                                    fontSize: '0.9rem',
                                   }}>
-                                    <strong style={{ color: tc.passCondition ? '#a5b4fc' : '#f87171' }}>
-                                      {tc.passCondition ? '🎯 PASS CONDITION:' : '❌ MISSING PASS CONDITION'}
-                                    </strong>
-                                    <span style={{ color: '#e2e8f0', marginLeft: '0.5rem' }}>{tc.passCondition}</span>
+                                    <span 
+                                      title={!tc.passCondition 
+                                        ? 'Kịch bản test chưa được định nghĩa công thức kiểm tra tính đúng đắn. Cần code lại test script!'
+                                        : (tc.passCondition.startsWith('[SIMULATED]') 
+                                            ? 'Điều kiện này do hệ thống trích xuất tự động. Cần QA/Dev review lại để đảm bảo chính xác.' 
+                                            : 'Điều kiện này đã được QA/Dev viết tay và review cẩn thận, có độ tin cậy tuyệt đối.')}
+                                      style={{
+                                      flexShrink: 0,
+                                      fontWeight: 800,
+                                      cursor: 'help',
+                                      color: tc.passCondition 
+                                        ? (tc.passCondition.startsWith('[SIMULATED]') ? '#facc15' : '#a5b4fc')
+                                        : '#f87171',
+                                      fontSize: '0.75rem',
+                                      padding: '0.2rem 0.6rem',
+                                      borderRadius: '6px',
+                                      background: tc.passCondition 
+                                        ? (tc.passCondition.startsWith('[SIMULATED]') ? 'rgba(234,179,8,0.2)' : 'rgba(99,102,241,0.2)')
+                                        : 'rgba(244, 63, 94, 0.15)',
+                                      marginTop: '0.05rem',
+                                      border: `1px solid ${tc.passCondition 
+                                        ? (tc.passCondition.startsWith('[SIMULATED]') ? 'rgba(234,179,8,0.4)' : 'rgba(99,102,241,0.4)')
+                                        : 'rgba(244, 63, 94, 0.3)'}`
+                                    }}>
+                                      {!tc.passCondition 
+                                        ? '❌ THIẾU ĐIỀU KIỆN PASS' 
+                                        : (tc.passCondition.startsWith('[SIMULATED]') ? '⚠ SIMULATED' : '🎯 ĐIỀU KIỆN PASS (KIỂM TRA KỸ)')}
+                                    </span>
+                                    <span style={{ color: tc.passCondition ? '#e2e8f0' : '#fca5a5', lineHeight: 1.6, fontWeight: 500 }}>
+                                      {!tc.passCondition 
+                                        ? 'Test case này trong file kết quả trả về không chứa mô tả Điều kiện Pass. Vui lòng cập nhật script để bổ sung!'
+                                        : (tc.passCondition.startsWith('[SIMULATED]')
+                                          ? tc.passCondition.replace('[SIMULATED]', '').trim()
+                                          : tc.passCondition)}
+                                    </span>
                                   </div>
 
-                                  <div style={{ marginBottom: '1rem' }}>
-                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Request Payload</div>
-                                    <pre style={{ background: 'rgba(0,0,0,0.3)', padding: '0.75rem', borderRadius: '6px', fontSize: '0.75rem', color: '#38bdf8', overflowX: 'auto' }}>
-                                      {JSON.stringify(tc.request.body, null, 2)}
-                                    </pre>
-                                  </div>
+                                  {/* Image Screenshot (UI Test Specific) */}
+                                  {tc.screenshot && (
+                                    <div className="detail-section" style={{ marginBottom: '1rem' }}>
+                                      <span className="detail-label">📸 Ảnh chụp màn hình (UI Screenshot)</span>
+                                      <div style={{ 
+                                        marginTop: '0.5rem', 
+                                        position: 'relative', 
+                                        borderRadius: '8px', 
+                                        overflow: 'hidden', 
+                                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                                        background: '#090d16'
+                                      }}>
+                                        <img 
+                                          src={tc.screenshot} 
+                                          alt={tc.name} 
+                                          style={{ maxWidth: '100%', display: 'block', height: 'auto', cursor: 'zoom-in', margin: '0 auto' }} 
+                                          onClick={() => window.open(tc.screenshot, '_blank')}
+                                        />
+                                      </div>
+                                    </div>
+                                  )}
 
-                                  <div style={{ marginBottom: '1rem' }}>
-                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Response Body</div>
-                                    <pre style={{ background: 'rgba(0,0,0,0.3)', padding: '0.75rem', borderRadius: '6px', fontSize: '0.75rem', color: hasFailed ? '#fca5a5' : '#6ee7b7', overflowX: 'auto' }}>
-                                      {JSON.stringify(tc.response?.body, null, 2)}
-                                    </pre>
+                                  <div className="detail-section" style={{ marginBottom: '1rem' }}>
+                                    <span className="detail-label">
+                                      {tc.request.method === 'CHECK_UI' || tc.request.method === 'CLICK_ACTION' || tc.request.method === 'NAVIGATE_TABS'
+                                        ? 'UI Action / Target'
+                                        : 'HTTP Endpoint'}
+                                    </span>
+                                    <div className="code-block" style={{ color: '#38bdf8' }}>
+                                      {tc.request.method} {tc.request.url.startsWith('http') ? tc.request.url : (tc.request.method === 'CHECK_UI' || tc.request.method === 'CLICK_ACTION' || tc.request.method === 'NAVIGATE_TABS' ? tc.request.url : `http://localhost:4000${tc.request.url}`)} (Status: {tc.statusCode})
+                                    </div>
                                   </div>
+                                  
+                                  {tc.request.body && (
+                                    <div className="detail-section" style={{ marginBottom: '1rem' }}>
+                                      <span className="detail-label">Dữ liệu gửi đi (Request Payload)</span>
+                                      <pre className="code-block">
+                                        {JSON.stringify(tc.request.body, null, 2)}
+                                      </pre>
+                                    </div>
+                                  )}
+
+                                  {tc.response && tc.response.body && (
+                                    <div className="detail-section" style={{ marginBottom: tc.logs && tc.logs.length > 0 ? '1rem' : '0' }}>
+                                      <span className="detail-label">Kết quả trả về (Response Body)</span>
+                                      <pre className="code-block" style={{ borderColor: hasFailed ? 'rgba(244,63,94,0.3)' : 'rgba(16,185,129,0.3)' }}>
+                                        {JSON.stringify(tc.response.body, null, 2)}
+                                      </pre>
+                                    </div>
+                                  )}
 
                                   {tc.logs && tc.logs.length > 0 && (
-                                    <div>
-                                      <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Logs</div>
-                                      <pre style={{ background: 'rgba(244, 63, 94, 0.05)', padding: '0.75rem', borderRadius: '6px', fontSize: '0.75rem', color: '#fca5a5', overflowX: 'auto', maxHeight: '200px' }}>
+                                    <div className="detail-section">
+                                      <span className="detail-label">⚠️ Nhật ký lỗi Console / Network (Logs)</span>
+                                      <pre className="code-block" style={{ 
+                                        maxHeight: '180px', 
+                                        overflowY: 'auto', 
+                                        background: 'rgba(244, 63, 94, 0.05)', 
+                                        color: '#fca5a5', 
+                                        borderColor: 'rgba(244, 63, 94, 0.15)',
+                                        fontFamily: 'monospace',
+                                        fontSize: '0.75rem',
+                                        whiteSpace: 'pre-wrap'
+                                      }}>
                                         {tc.logs.join('\n')}
                                       </pre>
                                     </div>
@@ -339,6 +449,7 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
             })()
           ) : activeRun?.status === 'running' ? (
             <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b', fontSize: '0.9rem' }}>
+              <div className="pulse-dot" style={{ width: '12px', height: '12px', margin: '0 auto 1rem', display: 'block' }}></div>
               Đang khởi chạy kịch bản kiểm thử...
             </div>
           ) : (
