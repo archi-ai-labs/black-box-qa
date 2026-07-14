@@ -1,0 +1,75 @@
+{
+  "tabs": {
+    "testing": "Kiểm thử",
+    "memory": "Bộ nhớ",
+    "guide": "Hướng dẫn",
+    "extract": "Trích xuất Prompt"
+  },
+  "testing": {
+    "selectProject": "Chọn dự án",
+    "projectTarget": "Target",
+    "mockServer": "Mock Server",
+    "liveApi": "Live API",
+    "running": "Đang chạy",
+    "stopped": "Đã dừng",
+    "online": "Online",
+    "offline": "Offline",
+    "runTestsBtn": "Chạy Test ngay",
+    "runTestsLoading": "Đang gọi test...",
+    "noProjects": "Chưa có dự án nào.",
+    "selectRun": "Lần chạy",
+    "latest": "Mới nhất",
+    "status": {
+      "pass": "PASS",
+      "fail": "FAIL"
+    },
+    "filter": {
+      "all": "Tất cả",
+      "pass": "Chỉ Pass",
+      "fail": "Chỉ Fail"
+    },
+    "summary": {
+      "total": "TỔNG TEST CASES",
+      "passed": "SỐ CASE PASS",
+      "failed": "SỐ CASE FAIL"
+    },
+    "performance": {
+      "title": "⚡ HIỆU NĂNG (PERFORMANCE)",
+      "avg": "Phản hồi TB",
+      "p95": "p95",
+      "max": "Chậm nhất",
+      "slowestEndpoint": "API chậm nhất"
+    }
+  },
+  "memory": {
+    "rules": "🛠️ Quy tắc làm việc nghiêm ngặt",
+    "patterns": "🧠 Bug Patterns đã học được",
+    "checklist": "📋 Checklist Kiểm thử Tổng hợp",
+    "emptyRules": "Chưa có quy tắc nào.",
+    "emptyPatterns": "Chưa có bài học nào.",
+    "emptyChecklist": "Checklist trống."
+  },
+  "guide": {
+    "title": "Agent AI Workflow",
+    "step1": "1. Mở IDE",
+    "step1Desc": "Mở thư mục này bằng Antigravity IDE, Cursor, hoặc Claude Code.",
+    "step2": "2. Giao việc",
+    "step2Desc": "Yêu cầu Agent 'Hãy kiểm thử dự án của tôi tại URL X'.",
+    "step3": "3. Tự động hóa",
+    "step3Desc": "Agent tự động đọc specs, sinh test cases và thực thi script test.",
+    "step4": "4. Theo dõi",
+    "step4Desc": "Xem kết quả real-time tại Dashboard này."
+  },
+  "extract": {
+    "context": "Context Specs",
+    "requirements": "Test Cases",
+    "copyBtn": "Copy Prompt vào Clipboard",
+    "copied": "Đã copy!"
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "success": "Thành công",
+    "copy": "Copy"
+  }
+}

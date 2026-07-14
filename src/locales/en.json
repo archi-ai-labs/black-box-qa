@@ -1,0 +1,75 @@
+{
+  "tabs": {
+    "testing": "Testing",
+    "memory": "Memory",
+    "guide": "Guide",
+    "extract": "Extract Prompt"
+  },
+  "testing": {
+    "selectProject": "Select project",
+    "projectTarget": "Target",
+    "mockServer": "Mock Server",
+    "liveApi": "Live API",
+    "running": "Running",
+    "stopped": "Stopped",
+    "online": "Online",
+    "offline": "Offline",
+    "runTestsBtn": "Run Tests now",
+    "runTestsLoading": "Triggering...",
+    "noProjects": "No projects available.",
+    "selectRun": "Test run",
+    "latest": "Latest",
+    "status": {
+      "pass": "PASS",
+      "fail": "FAIL"
+    },
+    "filter": {
+      "all": "All",
+      "pass": "Pass only",
+      "fail": "Fail only"
+    },
+    "summary": {
+      "total": "TOTAL CASES",
+      "passed": "PASSED CASES",
+      "failed": "FAILED CASES"
+    },
+    "performance": {
+      "title": "⚡ PERFORMANCE",
+      "avg": "Avg Response",
+      "p95": "p95",
+      "max": "Max Time",
+      "slowestEndpoint": "Slowest API"
+    }
+  },
+  "memory": {
+    "rules": "🛠️ Strict Working Rules",
+    "patterns": "🧠 Learned Bug Patterns",
+    "checklist": "📋 General Test Checklist",
+    "emptyRules": "No rules yet.",
+    "emptyPatterns": "No patterns learned.",
+    "emptyChecklist": "Checklist is empty."
+  },
+  "guide": {
+    "title": "Agent AI Workflow",
+    "step1": "1. Open IDE",
+    "step1Desc": "Open this folder with Antigravity IDE, Cursor, or Claude Code.",
+    "step2": "2. Assign Task",
+    "step2Desc": "Tell the Agent 'Please test my project at URL X'.",
+    "step3": "3. Automate",
+    "step3Desc": "The Agent will read specs, generate test cases, and execute them.",
+    "step4": "4. Monitor",
+    "step4Desc": "View real-time results on this Dashboard."
+  },
+  "extract": {
+    "context": "Context Specs",
+    "requirements": "Test Cases",
+    "copyBtn": "Copy Prompt to Clipboard",
+    "copied": "Copied!"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "copy": "Copy"
+  }
+}

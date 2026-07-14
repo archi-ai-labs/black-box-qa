@@ -71,62 +71,302 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
   if (projectsLoading) return <div className="p-4">{t('common.loading')}</div>;
 
   return (
-    <div className="glass-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <select 
-            value={selectedProjectId}
-            onChange={(e) => setSelectedProjectId(e.target.value)}
-            style={{ padding: '0.5rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
-          >
-            {projects.map(p => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
-          {data?.runs && data.runs.length > 0 && (
-            <select
-              value={selectedRunId || data.runs[0].runId}
-              onChange={(e) => setSelectedRunId(e.target.value)}
-              style={{ padding: '0.5rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      {/* Sub Header Selector Bar */}
+      <div className="card animate-fade-in" style={{ 
+        display: 'flex', 
+        flexDirection: 'column',
+        gap: '0.75rem', 
+        padding: '1rem 1.5rem', 
+        borderRadius: '10px',
+        background: 'rgba(30, 41, 59, 0.25)',
+        borderColor: 'rgba(255, 255, 255, 0.05)'
+      }}>
+        {/* Top row: Selectors */}
+        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Project Dropdown Selector */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              📁 {t('testing.selectProject') || 'Dự án'}:
+            </span>
+            <select 
+              value={selectedProjectId}
+              onChange={(e) => setSelectedProjectId(e.target.value)}
+              style={{
+                background: 'rgba(15, 23, 42, 0.8)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                color: '#fff',
+                padding: '0.45rem 1rem',
+                borderRadius: '6px',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                outline: 'none'
+              }}
             >
-              {data.runs.map(r => (
-                <option key={r.runId} value={r.runId}>
-                  Run: {new Date(r.timestamp).toLocaleString()} ({r.status})
-                </option>
+              {projects.map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
               ))}
             </select>
-          )}
-          {currentProject && (
-            <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
-              {t('testing.projectTarget')}: {currentProject.targetUrl}
+          </div>
+
+          {/* Test Runs Dropdown Selector */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              ⏱️ {t('testing.selectRun') || 'Phiên chạy'}:
             </span>
-          )}
+            {data?.runs && data.runs.length > 0 ? (
+              <select
+                value={selectedRunId || data.runs[0].runId}
+                onChange={(e) => setSelectedRunId(e.target.value)}
+                style={{
+                  background: 'rgba(15, 23, 42, 0.8)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  color: '#fff',
+                  padding: '0.45rem 1rem',
+                  borderRadius: '6px',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  outline: 'none'
+                }}
+              >
+                {data.runs.map(run => {
+                  const hasFailed = run.summary.failed > 0;
+                  const dateStr = new Date(run.timestamp).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                  let statusText = '';
+                  if (run.status === 'running') {
+                    statusText = '⚡ Đang chạy...';
+                  } else if (run.status === 'pending') {
+                    statusText = '⏳ Đang chờ';
+                  } else {
+                    statusText = hasFailed ? `❌ FAIL (${run.summary.failed} lỗi)` : '✅ PASS';
+                  }
+                  return (
+                    <option key={run.runId} value={run.runId}>
+                      {dateStr} - {statusText}
+                    </option>
+                  );
+                })}
+              </select>
+            ) : (
+              <span style={{ fontSize: '0.875rem', color: '#64748b' }}>Chưa có phiên chạy</span>
+            )}
+          </div>
+
+          {/* Run Tests Button */}
+          <div style={{ marginLeft: 'auto' }}>
+            <button 
+              onClick={handleRunTests}
+              disabled={triggering}
+              className="refresh-btn" 
+              style={{ background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white', padding: '0.35rem 0.85rem', fontSize: '0.775rem', borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 'bold' }}
+            >
+              <Play size={14} fill="currentColor" />
+              {triggering ? t('testing.runTestsLoading') : t('testing.runTestsBtn')}
+            </button>
+          </div>
         </div>
-        
-        <button 
-          onClick={handleRunTests}
-          disabled={triggering}
-          className="primary-btn"
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-        >
-          <Play size={16} />
-          {triggering ? t('testing.runTestsLoading') : t('testing.runTestsBtn')}
-        </button>
+
+        {/* Bottom row: Project description & connection status line */}
+        {currentProject && (
+          <div style={{ 
+            fontSize: '0.8rem', 
+            color: '#94a3b8', 
+            borderTop: '1px solid rgba(255, 255, 255, 0.05)', 
+            paddingTop: '0.6rem',
+            marginTop: '0.25rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.5rem',
+            lineHeight: '1.4'
+          }}>
+            <div>
+              <strong>Mô tả dự án:</strong> {currentProject.description}
+            </div>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', marginTop: '0.1rem' }}>
+              <strong>{t('testing.projectTarget')}:</strong> 
+              <span 
+                className={`pulse-dot ${data?.isApiOnline ? '' : 'stopped'}`} 
+                style={{ 
+                  width: '8px', 
+                  height: '8px',
+                  backgroundColor: data?.isApiOnline ? 'hsl(var(--color-success))' : 'hsl(var(--color-error))',
+                  boxShadow: data?.isApiOnline ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none'
+                }}
+              ></span>
+              <code style={{ fontFamily: 'monospace', color: data?.isApiOnline ? '#34d399' : '#f43f5e' }}>
+                {currentProject.targetUrl || 'Không xác định'}
+              </code>
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className="metrics-grid">
-        <div className="metric-card">
-          <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{t('testing.summary.total')}</span>
-          <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{data?.summary?.total || 0}</span>
+      {/* 1-Column Layout: Test cases details spanning 100% width */}
+      <div className="card animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', paddingBottom: '0.75rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <h2 className="section-title" style={{ margin: 0 }}>
+            <svg style={{ width: '18px', height: '18px', color: '#818cf8', marginRight: '8px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Chi tiết kết quả kiểm thử
+          </h2>
+          
+          {/* Integrated Summary inside Column Header */}
+          {activeRun ? (
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.02)',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              borderRadius: '6px',
+              padding: '0.5rem 1rem',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '1.5rem',
+              flexWrap: 'wrap',
+              width: '100%',
+              marginBottom: '0.25rem'
+            }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', fontSize: '0.8rem' }}>
+                {/* Run Time */}
+                <div>
+                  <span style={{ color: '#64748b', fontWeight: '700', marginRight: '0.35rem' }}>BẮT ĐẦU:</span>
+                  <span style={{ color: '#e2e8f0', fontFamily: 'monospace' }}>
+                    {new Date(activeRun.timestamp).toLocaleString('vi-VN')}
+                  </span>
+                </div>
+
+                {/* Run Status badge */}
+                <div>
+                  <span style={{ color: '#64748b', fontWeight: '700', marginRight: '0.35rem' }}>TRẠNG THÁI:</span>
+                  {activeRun.status === 'running' ? (
+                    <span style={{ color: '#38bdf8', fontWeight: '700', background: 'rgba(56, 189, 248, 0.1)', padding: '0.15rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(56, 189, 248, 0.2)' }} className="pulse">
+                      ⚡ Đang chạy...
+                    </span>
+                  ) : activeRun.status === 'pending' ? (
+                    <span style={{ color: '#fbbf24', fontWeight: '700', background: 'rgba(251, 191, 36, 0.1)', padding: '0.15rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(251, 191, 36, 0.2)' }}>
+                      ⏳ Đang chờ
+                    </span>
+                  ) : (
+                    <span style={{ color: '#34d399', fontWeight: '700', background: 'rgba(52, 211, 153, 0.1)', padding: '0.15rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(52, 211, 153, 0.2)' }}>
+                      ✓ Hoàn thành
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Result counts */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                {activeRun.summary.failed > 0 ? (
+                  <span style={{ color: '#fda4af', fontWeight: '700', fontSize: '0.75rem', background: 'rgba(244, 63, 94, 0.12)', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(244, 63, 94, 0.2)' }}>
+                    ❌ FAILED ({activeRun.summary.failed} lỗi)
+                  </span>
+                ) : activeRun.status === 'running' ? (
+                  <span style={{ color: '#94a3b8', fontWeight: '700', fontSize: '0.75rem', background: 'rgba(255,255,255,0.05)', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                    Running...
+                  </span>
+                ) : (
+                  <span style={{ color: '#a7f3d0', fontWeight: '700', fontSize: '0.75rem', background: 'rgba(16, 185, 129, 0.12)', padding: '0.2rem 0.5rem', borderRadius: '4px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                    ✅ ALL PASS
+                  </span>
+                )}
+                <div style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'flex', gap: '0.6rem' }}>
+                  <span>Tổng: <strong>{activeRun.summary.total}</strong></span>
+                  <span className="text-success">Đạt: <strong>{activeRun.summary.passed}</strong></span>
+                  <span className="text-error">Lỗi: <strong>{activeRun.summary.failed}</strong></span>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
-        <div className="metric-card">
-          <span style={{ fontSize: '0.75rem', color: '#10b981' }}>{t('testing.summary.passed')}</span>
-          <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#10b981' }}>{data?.summary?.passed || 0}</span>
-        </div>
-        <div className="metric-card">
-          <span style={{ fontSize: '0.75rem', color: '#ef4444' }}>{t('testing.summary.failed')}</span>
-          <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ef4444' }}>{data?.summary?.failed || 0}</span>
-        </div>
+
+        {/* Auto-Fix Report (Dynamic Showcase) */}
+        {activeRun && activeRun.autoFixReport && (
+          <div className="animate-fade-in" style={{
+            background: 'rgba(56, 189, 248, 0.05)',
+            border: '1px solid rgba(56, 189, 248, 0.15)',
+            borderRadius: '8px',
+            padding: '1rem',
+            marginBottom: '0.25rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.5rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#38bdf8', fontWeight: '800', fontSize: '0.825rem' }}>
+              <span>🔧 BÁO CÁO TỰ VÁ LỖI (AUTO-HEALING)</span>
+              <span style={{ fontSize: '0.65rem', color: '#fff', background: '#0284c7', padding: '0.15rem 0.45rem', borderRadius: '4px', fontWeight: '700' }}>
+                HEALED SUCCESS
+              </span>
+            </div>
+            <h4 style={{ margin: '0.1rem 0', fontSize: '0.9rem', color: '#fff', fontWeight: '700' }}>
+              {activeRun.autoFixReport.title}
+            </h4>
+            <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1', lineHeight: '1.4' }}>
+              {activeRun.autoFixReport.details}
+            </p>
+            {activeRun.autoFixReport.modifiedFiles && activeRun.autoFixReport.modifiedFiles.length > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
+                <span style={{ fontSize: '0.725rem', color: '#64748b', fontWeight: 'bold' }}>FILE ĐÃ SỬA:</span>
+                {activeRun.autoFixReport.modifiedFiles.map((f, i) => (
+                  <span key={i} style={{ fontSize: '0.7rem', fontFamily: 'monospace', color: '#38bdf8', background: 'rgba(56, 189, 248, 0.12)', padding: '0.15rem 0.4rem', borderRadius: '4px', border: '1px solid rgba(56, 189, 248, 0.15)' }}>
+                    {f}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Performance Insights (Dynamic Showcase) */}
+        {activeRun && activeRun.performance && (
+          <div className="animate-fade-in" style={{
+            background: 'rgba(255, 255, 255, 0.02)',
+            border: '1px solid rgba(255, 255, 255, 0.05)',
+            borderRadius: '8px',
+            padding: '1rem',
+            marginBottom: '0.25rem',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: '1rem'
+          }}>
+            <div>
+              <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 'bold', display: 'block', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                Độ trễ trung bình (Avg Latency)
+              </span>
+              <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#34d399', fontFamily: 'monospace' }}>
+                {activeRun.performance.avgResponseTimeMs} ms
+              </span>
+            </div>
+            <div>
+              <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 'bold', display: 'block', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                Độ trễ 95% (p95 Latency)
+              </span>
+              <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#fbbf24', fontFamily: 'monospace' }}>
+                {activeRun.performance.p95ResponseTimeMs} ms
+              </span>
+            </div>
+            <div>
+              <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 'bold', display: 'block', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                Độ trễ cao nhất (Max Latency)
+              </span>
+              <span style={{ fontSize: '1.2rem', fontWeight: '800', color: '#f43f5e', fontFamily: 'monospace' }}>
+                {activeRun.performance.maxResponseTimeMs} ms
+              </span>
+            </div>
+            {activeRun.performance.slowestEndpoint && (
+              <div>
+                <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 'bold', display: 'block', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+                  API chậm nhất
+                </span>
+                <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontFamily: 'monospace', wordBreak: 'break-all' }}>
+                  {activeRun.performance.slowestEndpoint}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Render Test Cases */}
@@ -139,7 +379,7 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
             marginBottom: '1rem', flexWrap: 'wrap'
           }}>
             <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700', marginRight: '0.5rem', textTransform: 'uppercase' }}>
-              🔍 {t('testing.filter.all') || "Lọc kết quả:"}
+              🔍 Lọc kết quả:
             </span>
             <button 
               onClick={() => handleFilterChange('ALL')}
