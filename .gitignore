@@ -43,6 +43,7 @@ CLAUDE.md
 
 # Project savefee có endpoint thật (api-dev.savefee.io)
 /data/project-savefee/
+/data/project-tronsave/
 
 # Bộ nhớ agent nội bộ (phiên làm việc)
 shared_memory.md
