@@ -10,6 +10,7 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
   const { projects, loading: projectsLoading } = useProjects();
   const [selectedProjectId, setSelectedProjectId] = useState<string>('project-demo');
   const { data, loading: dataLoading } = useTestStatus(selectedProjectId);
+  const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
 
   const [triggering, setTriggering] = useState(false);
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PASS' | 'FAIL'>('ALL');
@@ -63,7 +64,9 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
   };
 
   const currentProject = projects.find(p => p.id === selectedProjectId);
-  const activeRun = data?.runs && data.runs.length > 0 ? data.runs[0] : null;
+  const activeRun = selectedRunId 
+    ? data?.runs?.find(r => r.runId === selectedRunId) 
+    : (data?.runs && data.runs.length > 0 ? data.runs[0] : null);
 
   if (projectsLoading) return <div className="p-4">{t('common.loading')}</div>;
 
@@ -80,6 +83,19 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}
           </select>
+          {data?.runs && data.runs.length > 0 && (
+            <select
+              value={selectedRunId || data.runs[0].runId}
+              onChange={(e) => setSelectedRunId(e.target.value)}
+              style={{ padding: '0.5rem', borderRadius: '4px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+            >
+              {data.runs.map(r => (
+                <option key={r.runId} value={r.runId}>
+                  Run: {new Date(r.timestamp).toLocaleString()} ({r.status})
+                </option>
+              ))}
+            </select>
+          )}
           {currentProject && (
             <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
               {t('testing.projectTarget')}: {currentProject.targetUrl}
