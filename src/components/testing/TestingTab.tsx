@@ -65,7 +65,7 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
 
   const currentProject = projects.find(p => p.id === selectedProjectId);
   const activeRun = selectedRunId 
-    ? data?.runs?.find(r => r.runId === selectedRunId) 
+    ? data?.runs?.find(r => r.id === selectedRunId)
     : (data?.runs && data.runs.length > 0 ? data.runs[0] : null);
 
   if (projectsLoading) return <div className="p-4">{t('common.loading')}</div>;
@@ -117,7 +117,7 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
             </span>
             {data?.runs && data.runs.length > 0 ? (
               <select
-                value={selectedRunId || data.runs[0].runId}
+                value={selectedRunId || data.runs[0].id}
                 onChange={(e) => setSelectedRunId(e.target.value)}
                 style={{
                   background: 'rgba(15, 23, 42, 0.8)',
@@ -143,7 +143,7 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
                     statusText = hasFailed ? `❌ FAIL (${run.summary.failed} lỗi)` : '✅ PASS';
                   }
                   return (
-                    <option key={run.runId} value={run.runId}>
+                    <option key={run.id} value={run.id}>
                       {dateStr} - {statusText}
                     </option>
                   );
