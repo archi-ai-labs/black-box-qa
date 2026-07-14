@@ -32,6 +32,23 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# IDE config cá nhân
+CLAUDE.md
+
+# ==============================
+# QA Runtime Data — project thật (không commit lên GitHub)
+# ==============================
+
+# Project savefee có endpoint thật (api-dev.savefee.io)
+/data/project-savefee/
+
+# Bộ nhớ agent nội bộ (phiên làm việc)
+shared_memory.md
+
+# Script hardcode cho project thật
+run-savefee-tests.sh
 
 # vercel
 .vercel

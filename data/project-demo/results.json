@@ -1,0 +1,243 @@
+{
+  "lastUpdated": "2026-07-07T10:44:50.630Z",
+  "summary": {
+    "total": 3,
+    "passed": 2,
+    "failed": 1
+  },
+  "mockServerStatus": "running",
+  "runs": [
+    {
+      "id": "run_1783421089120",
+      "timestamp": "2026-07-07T10:44:49.120Z",
+      "status": "completed",
+      "summary": {
+        "total": 3,
+        "passed": 2,
+        "failed": 1
+      },
+      "testCases": [
+        {
+          "name": "Đăng ký thành công với dữ liệu hợp lệ",
+          "status": "PASS",
+          "statusCode": 201,
+          "durationMs": 2,
+          "request": {
+            "method": "POST",
+            "url": "/api/register",
+            "body": {
+              "email": "user_1783421090623@example.com",
+              "password": "password123"
+            }
+          },
+          "response": {
+            "status": 201,
+            "body": {
+              "message": "User registered successfully",
+              "email": "user_1783421090623@example.com"
+            }
+          },
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Đăng ký với Email sai định dạng (Kỳ vọng 400)",
+          "status": "FAIL",
+          "statusCode": 500,
+          "durationMs": 2,
+          "request": {
+            "method": "POST",
+            "url": "/api/register",
+            "body": {
+              "email": "invalid-email-format",
+              "password": "password123"
+            }
+          },
+          "response": {
+            "status": 500,
+            "body": {
+              "error": "Internal Server Error",
+              "message": "Cannot read properties of undefined (reading 'split') at registerUser"
+            }
+          },
+          "errorMsg": "LỖI NGHIỆP VỤ: Mong đợi status 400 (Bad Request), nhận được 500 (Internal Server Error)",
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Đăng ký trùng Email (Kỳ vọng 409 Conflict)",
+          "status": "PASS",
+          "statusCode": 409,
+          "durationMs": 1,
+          "request": {
+            "method": "POST",
+            "url": "/api/register",
+            "body": {
+              "email": "duplicate_1783421090627@example.com",
+              "password": "password123"
+            }
+          },
+          "response": {
+            "status": 409,
+            "body": {
+              "error": "Email already registered"
+            }
+          },
+          "catalog": "AUTH"
+        }
+      ]
+    },
+    {
+      "id": "run_1783419477460",
+      "timestamp": "2026-07-07T10:17:57.460Z",
+      "summary": {
+        "total": 3,
+        "passed": 2,
+        "failed": 1
+      },
+      "testCases": [
+        {
+          "name": "Đăng ký thành công với dữ liệu hợp lệ",
+          "status": "PASS",
+          "statusCode": 201,
+          "durationMs": 1,
+          "request": {
+            "method": "POST",
+            "url": "/api/register",
+            "body": {
+              "email": "user_1783419477455@example.com",
+              "password": "password123"
+            }
+          },
+          "response": {
+            "status": 201,
+            "body": {
+              "message": "User registered successfully",
+              "email": "user_1783419477455@example.com"
+            }
+          },
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Đăng ký với Email sai định dạng (Kỳ vọng 400)",
+          "status": "FAIL",
+          "statusCode": 500,
+          "durationMs": 1,
+          "request": {
+            "method": "POST",
+            "url": "/api/register",
+            "body": {
+              "email": "invalid-email-format",
+              "password": "password123"
+            }
+          },
+          "response": {
+            "status": 500,
+            "body": {
+              "error": "Internal Server Error",
+              "message": "Cannot read properties of undefined (reading 'split') at registerUser"
+            }
+          },
+          "errorMsg": "LỖI NGHIỆP VỤ: Mong đợi status 400 (Bad Request), nhận được 500 (Internal Server Error)",
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Đăng ký trùng Email (Kỳ vọng 409 Conflict)",
+          "status": "PASS",
+          "statusCode": 409,
+          "durationMs": 1,
+          "request": {
+            "method": "POST",
+            "url": "/api/register",
+            "body": {
+              "email": "duplicate_1783419477458@example.com",
+              "password": "password123"
+            }
+          },
+          "response": {
+            "status": 409,
+            "body": {
+              "error": "Email already registered"
+            }
+          },
+          "catalog": "AUTH"
+        }
+      ]
+    },
+    {
+      "id": "run_1783417184594",
+      "timestamp": "2026-07-07T09:39:44.594Z",
+      "summary": {
+        "total": 3,
+        "passed": 2,
+        "failed": 1
+      },
+      "testCases": [
+        {
+          "name": "Đăng ký thành công với dữ liệu hợp lệ",
+          "status": "PASS",
+          "statusCode": 201,
+          "durationMs": 2,
+          "request": {
+            "method": "POST",
+            "url": "/api/register",
+            "body": {
+              "email": "user_1783417184589@example.com",
+              "password": "password123"
+            }
+          },
+          "response": {
+            "status": 201,
+            "body": {
+              "message": "User registered successfully",
+              "email": "user_1783417184589@example.com"
+            }
+          },
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Đăng ký với Email sai định dạng (Kỳ vọng 400)",
+          "status": "FAIL",
+          "statusCode": 500,
+          "durationMs": 1,
+          "request": {
+            "method": "POST",
+            "url": "/api/register",
+            "body": {
+              "email": "invalid-email-format",
+              "password": "password123"
+            }
+          },
+          "response": {
+            "status": 500,
+            "body": {
+              "error": "Internal Server Error",
+              "message": "Cannot read properties of undefined (reading 'split') at registerUser"
+            }
+          },
+          "errorMsg": "LỖI NGHIỆP VỤ: Mong đợi status 400 (Bad Request), nhận được 500 (Internal Server Error)",
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Đăng ký trùng Email (Kỳ vọng 409 Conflict)",
+          "status": "PASS",
+          "statusCode": 409,
+          "durationMs": 1,
+          "request": {
+            "method": "POST",
+            "url": "/api/register",
+            "body": {
+              "email": "duplicate_1783417184592@example.com",
+              "password": "password123"
+            }
+          },
+          "response": {
+            "status": 409,
+            "body": {
+              "error": "Email already registered"
+            }
+          },
+          "catalog": "AUTH"
+        }
+      ]
+    }
+  ]
+}

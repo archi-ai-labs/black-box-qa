@@ -1,0 +1,80 @@
+{
+  "lastUpdated": "2026-07-07T16:08:38.662Z",
+  "summary": {
+    "total": 3,
+    "passed": 0,
+    "failed": 3
+  },
+  "mockServerStatus": "stopped",
+  "runs": [
+    {
+      "id": "run_1783440513547",
+      "timestamp": "2026-07-07T16:08:33.547Z",
+      "status": "completed",
+      "summary": {
+        "total": 3,
+        "passed": 0,
+        "failed": 3
+      },
+      "performance": {
+        "avgResponseTimeMs": 0,
+        "p95ResponseTimeMs": 0,
+        "maxResponseTimeMs": 0,
+        "slowestEndpoint": ""
+      },
+      "testCases": [
+        {
+          "name": "Đăng ký thành công với dữ liệu hợp lệ",
+          "catalog": "AUTH",
+          "status": "FAIL",
+          "statusCode": 0,
+          "durationMs": 0,
+          "request": {
+            "method": "POST",
+            "url": "/api/register",
+            "body": null
+          },
+          "response": {
+            "status": 0,
+            "body": null
+          },
+          "errorMsg": ""
+        },
+        {
+          "name": "Đăng ký với Email sai định dạng (Kỳ vọng 400)",
+          "catalog": "AUTH",
+          "status": "FAIL",
+          "statusCode": 0,
+          "durationMs": 0,
+          "request": {
+            "method": "POST",
+            "url": "/api/register",
+            "body": null
+          },
+          "response": {
+            "status": 0,
+            "body": null
+          },
+          "errorMsg": ""
+        },
+        {
+          "name": "Đăng ký trùng Email (Kỳ vọng 409 Conflict)",
+          "catalog": "AUTH",
+          "status": "FAIL",
+          "statusCode": 0,
+          "durationMs": 0,
+          "request": {
+            "method": "POST",
+            "url": "/api/register",
+            "body": null
+          },
+          "response": {
+            "status": 0,
+            "body": null
+          },
+          "errorMsg": ""
+        }
+      ]
+    }
+  ]
+}

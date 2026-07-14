@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3080",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "run-tests": "node --experimental-strip-types /Users/apple/.gemini/antigravity/scratch/qa-agent-tests/runner.ts"
   },
   "dependencies": {
     "next": "16.2.10",
@@ -20,7 +21,9 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "playwright": "^1.61.1",
     "tailwindcss": "^4",
+    "tronweb": "^6.4.0",
     "typescript": "^5"
   }
 }

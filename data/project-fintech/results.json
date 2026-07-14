@@ -1,0 +1,325 @@
+{
+  "lastUpdated": "2026-07-07T10:45:00.000Z",
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "runs": [
+    {
+      "id": "run_1783423000000",
+      "timestamp": "2026-07-07T10:45:00.000Z",
+      "status": "completed",
+      "summary": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "performance": {
+        "avgResponseTimeMs": 42,
+        "maxResponseTimeMs": 110,
+        "p95ResponseTimeMs": 85,
+        "slowestEndpoint": "POST /api/webhooks/payment"
+      },
+      "autoFixReport": {
+        "status": "healed",
+        "title": "Bịt lỗi rò rỉ dữ liệu nhạy cảm trong Log & Kích hoạt Header Bảo mật",
+        "details": "Đã chỉnh sửa tệp `middleware/errorHandler.js` thay thế khối trả về lỗi Database thô thành logger nội bộ ẩn danh. Ngoài ra, đã tích hợp gói `helmet` trong file `app.js` để tự động bật các Header bảo mật như X-Frame-Options và CSP.",
+        "modifiedFiles": [
+          "middleware/errorHandler.js:L18",
+          "app.js:L9"
+        ]
+      },
+      "testCases": [
+        {
+          "name": "Kiểm thử rò rỉ dữ liệu nhạy cảm trong log phản hồi lỗi (Database Error Leakage)",
+          "status": "PASS",
+          "statusCode": 500,
+          "durationMs": 12,
+          "request": {
+            "method": "GET",
+            "url": "/api/payments?transactionId='OR_SELECT_ALL",
+            "body": null
+          },
+          "response": {
+            "status": 500,
+            "body": {
+              "error": "Internal Server Error",
+              "message": "Hệ thống gặp sự cố. Vui lòng liên hệ bộ phận hỗ trợ kỹ thuật."
+            }
+          },
+          "catalog": "TRANSACTION"
+        },
+        {
+          "name": "Kiểm thử cấu hình Response Headers bảo mật (Security Headers Audit)",
+          "status": "PASS",
+          "statusCode": 200,
+          "durationMs": 6,
+          "request": {
+            "method": "HEAD",
+            "url": "/api/health",
+            "body": null
+          },
+          "response": {
+            "status": 200,
+            "headers": {
+              "X-Frame-Options": "DENY",
+              "X-Content-Type-Options": "nosniff",
+              "Content-Security-Policy": "default-src 'self'",
+              "Referrer-Policy": "no-referrer"
+            },
+            "body": null
+          },
+          "catalog": "SECURITY"
+        },
+        {
+          "name": "Kiểm thử mã hóa che mặt số thẻ tín dụng (PCI-DSS Card Masking)",
+          "status": "PASS",
+          "statusCode": 200,
+          "durationMs": 28,
+          "request": {
+            "method": "GET",
+            "url": "/api/payment-methods",
+            "body": null
+          },
+          "response": {
+            "status": 200,
+            "body": [
+              {
+                "cardType": "Visa",
+                "last4": "1234",
+                "cardNumber": "xxxx-xxxx-xxxx-1234",
+                "holderName": "JOHN DOE"
+              }
+            ]
+          },
+          "catalog": "TRANSACTION"
+        },
+        {
+          "name": "Xác thực chữ ký số HMAC của webhook thanh toán (Webhook Signature Verification)",
+          "status": "PASS",
+          "statusCode": 401,
+          "durationMs": 35,
+          "request": {
+            "method": "POST",
+            "url": "/api/webhooks/payment",
+            "headers": {
+              "X-Payment-Signature": "invalid_or_modified_hmac_signature"
+            },
+            "body": {
+              "transactionId": "tx_9921",
+              "amount": 5000,
+              "status": "success"
+            }
+          },
+          "response": {
+            "status": 401,
+            "body": {
+              "error": "Unauthorized",
+              "message": "Chữ ký webhook không hợp lệ. Yêu cầu bị từ chối."
+            }
+          },
+          "catalog": "TRANSACTION"
+        },
+        {
+          "name": "Kiểm thử CORS chặn xuất xứ không cho phép trên giao dịch (CORS Transaction Policy)",
+          "status": "PASS",
+          "statusCode": 403,
+          "durationMs": 10,
+          "request": {
+            "method": "POST",
+            "url": "/api/transactions/transfer",
+            "headers": {
+              "Origin": "http://evil-attacker.com"
+            },
+            "body": {
+              "toAccount": "99210023",
+              "amount": 250000
+            }
+          },
+          "response": {
+            "status": 403,
+            "body": {
+              "error": "Forbidden",
+              "message": "Origin không được cấu hình cho phép truy cập tài nguyên này."
+            }
+          },
+          "catalog": "TRANSACTION"
+        },
+        {
+          "name": "Xác thực JWT Token hết hạn (Expired Token Check)",
+          "status": "PASS",
+          "statusCode": 401,
+          "durationMs": 9,
+          "request": {
+            "method": "GET",
+            "url": "/api/user/transactions",
+            "body": null
+          },
+          "response": {
+            "status": 401,
+            "body": {
+              "error": "Unauthorized",
+              "message": "JWT Token đã hết hạn. Vui lòng đăng nhập lại."
+            }
+          },
+          "catalog": "TRANSACTION"
+        }
+      ]
+    },
+    {
+      "id": "run_1783422900000",
+      "timestamp": "2026-07-07T10:30:00.000Z",
+      "status": "completed",
+      "summary": {
+        "total": 6,
+        "passed": 4,
+        "failed": 2
+      },
+      "performance": {
+        "avgResponseTimeMs": 55,
+        "maxResponseTimeMs": 150,
+        "p95ResponseTimeMs": 120,
+        "slowestEndpoint": "POST /api/webhooks/payment"
+      },
+      "testCases": [
+        {
+          "name": "Kiểm thử rò rỉ dữ liệu nhạy cảm trong log phản hồi lỗi (Database Error Leakage)",
+          "status": "FAIL",
+          "statusCode": 500,
+          "durationMs": 28,
+          "request": {
+            "method": "GET",
+            "url": "/api/payments?transactionId='OR_SELECT_ALL",
+            "body": null
+          },
+          "response": {
+            "status": 500,
+            "body": {
+              "error": "Database Query Error",
+              "query": "SELECT * FROM transactions WHERE transactionId = ''OR_SELECT_ALL'",
+              "connectionString": "postgres://fintech_user:secret_pay_pwd@127.0.0.1:5432/finance_db",
+              "stack": "Error: syntax error at or near \"OR\"\n    at Client._readErrorMessage (/app/node_modules/pg/lib/client.js:290:19)"
+            }
+          },
+          "errorMsg": "LỖI BẢO MẬT NGHIÊM TRỌNG: Response phản hồi lỗi database chi tiết làm rò rỉ cả tên đăng nhập và mật khẩu dịch vụ Fintech (`fintech_user:secret_pay_pwd`)!",
+          "catalog": "TRANSACTION"
+        },
+        {
+          "name": "Kiểm thử cấu hình Response Headers bảo mật (Security Headers Audit)",
+          "status": "FAIL",
+          "statusCode": 200,
+          "durationMs": 7,
+          "request": {
+            "method": "HEAD",
+            "url": "/api/health",
+            "body": null
+          },
+          "response": {
+            "status": 200,
+            "headers": {
+              "Server": "Express/4.18.2",
+              "X-Powered-By": "Express"
+            },
+            "body": null
+          },
+          "errorMsg": "LỖI CẤU HÌNH HEADERS: Hệ thống hoàn toàn không trả về các Security Headers chuẩn để phòng chống clickjacking và đánh cắp cookie session.",
+          "catalog": "SECURITY"
+        },
+        {
+          "name": "Kiểm thử mã hóa che mặt số thẻ tín dụng (PCI-DSS Card Masking)",
+          "status": "PASS",
+          "statusCode": 200,
+          "durationMs": 25,
+          "request": {
+            "method": "GET",
+            "url": "/api/payment-methods",
+            "body": null
+          },
+          "response": {
+            "status": 200,
+            "body": [
+              {
+                "cardType": "Visa",
+                "last4": "1234",
+                "cardNumber": "xxxx-xxxx-xxxx-1234",
+                "holderName": "JOHN DOE"
+              }
+            ]
+          },
+          "catalog": "TRANSACTION"
+        },
+        {
+          "name": "Xác thực chữ ký số HMAC của webhook thanh toán (Webhook Signature Verification)",
+          "status": "PASS",
+          "statusCode": 401,
+          "durationMs": 31,
+          "request": {
+            "method": "POST",
+            "url": "/api/webhooks/payment",
+            "headers": {
+              "X-Payment-Signature": "invalid_or_modified_hmac_signature"
+            },
+            "body": {
+              "transactionId": "tx_9921",
+              "amount": 5000,
+              "status": "success"
+            }
+          },
+          "response": {
+            "status": 401,
+            "body": {
+              "error": "Unauthorized",
+              "message": "Chữ ký webhook không hợp lệ. Yêu cầu bị từ chối."
+            }
+          },
+          "catalog": "TRANSACTION"
+        },
+        {
+          "name": "Kiểm thử CORS chặn xuất xứ không cho phép trên giao dịch (CORS Transaction Policy)",
+          "status": "PASS",
+          "statusCode": 403,
+          "durationMs": 9,
+          "request": {
+            "method": "POST",
+            "url": "/api/transactions/transfer",
+            "headers": {
+              "Origin": "http://evil-attacker.com"
+            },
+            "body": {
+              "toAccount": "99210023",
+              "amount": 250000
+            }
+          },
+          "response": {
+            "status": 403,
+            "body": {
+              "error": "Forbidden",
+              "message": "Origin không được cấu hình cho phép truy cập tài nguyên này."
+            }
+          },
+          "catalog": "TRANSACTION"
+        },
+        {
+          "name": "Xác thực JWT Token hết hạn (Expired Token Check)",
+          "status": "PASS",
+          "statusCode": 401,
+          "durationMs": 8,
+          "request": {
+            "method": "GET",
+            "url": "/api/user/transactions",
+            "body": null
+          },
+          "response": {
+            "status": 401,
+            "body": {
+              "error": "Unauthorized",
+              "message": "JWT Token đã hết hạn. Vui lòng đăng nhập lại."
+            }
+          },
+          "catalog": "TRANSACTION"
+        }
+      ]
+    }
+  ]
+}

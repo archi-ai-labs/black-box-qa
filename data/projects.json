@@ -1,0 +1,44 @@
+[
+  {
+    "id": "project-demo",
+    "name": "Demo Register API",
+    "description": "Project mẫu minh họa cách dùng QA Dashboard. Chạy mock server tại localhost:3001.",
+    "targetUrl": "http://localhost:3001/health",
+    "type": "api"
+  },
+  {
+    "id": "project-ecommerce",
+    "name": "E-Commerce API Service",
+    "description": "API dịch vụ Thương mại điện tử. Trọng tâm: Bảo mật thanh toán, xử lý Race Condition (áp mã giảm giá, mua hàng đồng thời) và phân trang chống DoS.",
+    "targetUrl": "http://localhost:8080/api/health",
+    "type": "api"
+  },
+  {
+    "id": "project-fintech",
+    "name": "Fintech Payment Gateway",
+    "description": "Cổng thanh toán điện tử Fintech. Trọng tâm: Tuân thủ bảo mật TLS/HTTPS, xác thực chữ ký HMAC chống giả mạo request, rò rỉ thông tin nhạy cảm qua log lỗi DB.",
+    "targetUrl": "http://localhost:8081/v1/health",
+    "type": "api"
+  },
+  {
+    "id": "project-saas",
+    "name": "SaaS User & Access Control",
+    "description": "Hệ thống quản lý người dùng SaaS. Trọng tâm: Định dạng JSON Schema, JWT Token hết hạn, tần suất gửi yêu cầu Rate Limiting, và lỗi bảo mật IDOR.",
+    "targetUrl": "http://localhost:9000/healthz",
+    "type": "api"
+  },
+  {
+    "id": "project-tronsave",
+    "name": "Tronsave Web UI Testnet",
+    "description": "Kiểm thử giao diện (UI/UX) và các tính năng tương tác của Tronsave Web App trên Testnet. Tự động khám phá trang chủ, các nút điều hướng chính, và lắng nghe console log lỗi.",
+    "targetUrl": "https://testnet.tronsave.io/",
+    "type": "ui-test"
+  },
+  {
+    "id": "project-custom",
+    "name": "Custom Project",
+    "description": "Thêm project của bạn vào đây bằng cách sửa file data/projects.json và tạo thư mục data/project-custom/.",
+    "targetUrl": "http://localhost:3000/health",
+    "type": "api"
+  }
+]

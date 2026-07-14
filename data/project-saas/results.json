@@ -1,0 +1,330 @@
+{
+  "lastUpdated": "2026-07-07T10:45:00.000Z",
+  "summary": {
+    "total": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "runs": [
+    {
+      "id": "run_1783424000000",
+      "timestamp": "2026-07-07T10:45:00.000Z",
+      "status": "completed",
+      "summary": {
+        "total": 6,
+        "passed": 6,
+        "failed": 0
+      },
+      "performance": {
+        "avgResponseTimeMs": 28,
+        "maxResponseTimeMs": 75,
+        "p95ResponseTimeMs": 55,
+        "slowestEndpoint": "POST /api/auth/login"
+      },
+      "autoFixReport": {
+        "status": "healed",
+        "title": "Bịt lỗi bảo mật IDOR truy cập trái phép hồ sơ người dùng",
+        "details": "Đã thêm bộ lọc kiểm tra quyền sở hữu ID tài nguyên trong tệp `controllers/userProfileController.js`. Hệ thống so sánh đối chiếu ID của người dùng yêu cầu (lấy từ JWT Token) với ID tài nguyên được truy cập trên URL, trả về lỗi 403 nếu không trùng khớp.",
+        "modifiedFiles": [
+          "controllers/userProfileController.js:L42"
+        ]
+      },
+      "testCases": [
+        {
+          "name": "Kiểm thử lỗi bảo mật IDOR truy cập hồ sơ chéo (IDOR Profile Access check)",
+          "status": "PASS",
+          "statusCode": 403,
+          "durationMs": 15,
+          "request": {
+            "method": "GET",
+            "url": "/api/user/profile/102",
+            "body": null
+          },
+          "response": {
+            "status": 403,
+            "body": {
+              "error": "Forbidden",
+              "message": "Bạn không có quyền truy cập thông tin của tài khoản này."
+            }
+          },
+          "catalog": "SECURITY"
+        },
+        {
+          "name": "Kiểm thử cấu trúc dữ liệu JSON Schema (Signup JSON Validation)",
+          "status": "PASS",
+          "statusCode": 400,
+          "durationMs": 22,
+          "request": {
+            "method": "POST",
+            "url": "/api/auth/signup",
+            "body": {
+              "email": "wrong-email-format",
+              "password": "short"
+            }
+          },
+          "response": {
+            "status": 400,
+            "body": {
+              "error": "Bad Request",
+              "errors": [
+                "Định dạng Email không hợp lệ.",
+                "Mật khẩu phải chứa ít nhất 8 ký tự."
+              ]
+            }
+          },
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Xác thực JWT Token hết hạn (Expired JWT Token Validation)",
+          "status": "PASS",
+          "statusCode": 401,
+          "durationMs": 8,
+          "request": {
+            "method": "GET",
+            "url": "/api/user/settings",
+            "body": null
+          },
+          "response": {
+            "status": 401,
+            "body": {
+              "error": "Unauthorized",
+              "message": "Token đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại."
+            }
+          },
+          "catalog": "GENERAL"
+        },
+        {
+          "name": "Kiểm thử giới hạn tần suất gửi yêu cầu Bruteforce (Rate Limiting Protection)",
+          "status": "PASS",
+          "statusCode": 429,
+          "durationMs": 75,
+          "request": {
+            "method": "POST",
+            "url": "/api/auth/login [Gửi dồn dập 20 req/giây]",
+            "body": {
+              "email": "user@example.com",
+              "password": "wrong_password"
+            }
+          },
+          "response": {
+            "status": 429,
+            "body": {
+              "error": "Too Many Requests",
+              "message": "Tài khoản bị tạm khóa do nhập sai nhiều lần. Thử lại sau 10 phút."
+            }
+          },
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Kiểm thử tấn công Host Header Injection (Password Reset Poisoning)",
+          "status": "PASS",
+          "statusCode": 200,
+          "durationMs": 35,
+          "request": {
+            "method": "POST",
+            "url": "/api/auth/reset-password",
+            "headers": {
+              "Host": "evil-attacker.com"
+            },
+            "body": {
+              "email": "user@company.com"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "message": "Email đặt lại mật khẩu đã được gửi đến hòm thư của bạn.",
+              "debugInfo": {
+                "linkGenerated": "https://my-saas-app.com/reset-password?token=jwt_secure_reset_token"
+              }
+            }
+          },
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Kiểm thử kiểu tệp tin ảnh đại diện tải lên (Avatar MIME-type check)",
+          "status": "PASS",
+          "statusCode": 415,
+          "durationMs": 48,
+          "request": {
+            "method": "POST",
+            "url": "/api/user/avatar",
+            "body": {
+              "filename": "web_shell.php",
+              "mimeType": "application/x-php",
+              "content": "<?php echo 'malicious'; ?>"
+            }
+          },
+          "response": {
+            "status": 415,
+            "body": {
+              "error": "Unsupported Media Type",
+              "message": "Hệ thống chỉ chấp nhận định dạng ảnh (PNG, JPG, WEBP)."
+            }
+          },
+          "catalog": "GENERAL"
+        }
+      ]
+    },
+    {
+      "id": "run_1783423900000",
+      "timestamp": "2026-07-07T10:30:00.000Z",
+      "status": "completed",
+      "summary": {
+        "total": 6,
+        "passed": 5,
+        "failed": 1
+      },
+      "performance": {
+        "avgResponseTimeMs": 34,
+        "maxResponseTimeMs": 90,
+        "p95ResponseTimeMs": 70,
+        "slowestEndpoint": "POST /api/auth/login"
+      },
+      "testCases": [
+        {
+          "name": "Kiểm thử lỗi bảo mật IDOR truy cập hồ sơ chéo (IDOR Profile Access check)",
+          "status": "FAIL",
+          "statusCode": 200,
+          "durationMs": 19,
+          "request": {
+            "method": "GET",
+            "url": "/api/user/profile/102",
+            "body": null
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "id": 102,
+              "name": "Bob Green",
+              "email": "bob@saas-user.com",
+              "company": "BobCorp",
+              "apiKeys": [
+                "live_key_99238812a"
+              ]
+            }
+          },
+          "errorMsg": "LỖI BẢO MẬT NGHIÊM TRỌNG (IDOR): Tài khoản ID 101 dùng JWT Token hợp lệ vẫn có thể đọc trộm thông tin cá nhân và API Key nhạy cảm của tài khoản ID 102!",
+          "catalog": "SECURITY"
+        },
+        {
+          "name": "Kiểm thử cấu trúc dữ liệu JSON Schema (Signup JSON Validation)",
+          "status": "PASS",
+          "statusCode": 400,
+          "durationMs": 20,
+          "request": {
+            "method": "POST",
+            "url": "/api/auth/signup",
+            "body": {
+              "email": "wrong-email-format",
+              "password": "short"
+            }
+          },
+          "response": {
+            "status": 400,
+            "body": {
+              "error": "Bad Request",
+              "errors": [
+                "Định dạng Email không hợp lệ.",
+                "Mật khẩu phải chứa ít nhất 8 ký tự."
+              ]
+            }
+          },
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Xác thực JWT Token hết hạn (Expired JWT Token Validation)",
+          "status": "PASS",
+          "statusCode": 401,
+          "durationMs": 9,
+          "request": {
+            "method": "GET",
+            "url": "/api/user/settings",
+            "body": null
+          },
+          "response": {
+            "status": 401,
+            "body": {
+              "error": "Unauthorized",
+              "message": "Token đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại."
+            }
+          },
+          "catalog": "GENERAL"
+        },
+        {
+          "name": "Kiểm thử giới hạn tần suất gửi yêu cầu Bruteforce (Rate Limiting Protection)",
+          "status": "PASS",
+          "statusCode": 429,
+          "durationMs": 70,
+          "request": {
+            "method": "POST",
+            "url": "/api/auth/login [Gửi dồn dập 20 req/giây]",
+            "body": {
+              "email": "user@example.com",
+              "password": "wrong_password"
+            }
+          },
+          "response": {
+            "status": 429,
+            "body": {
+              "error": "Too Many Requests",
+              "message": "Tài khoản bị tạm khóa do nhập sai nhiều lần. Thử lại sau 10 phút."
+            }
+          },
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Kiểm thử tấn công Host Header Injection (Password Reset Poisoning)",
+          "status": "PASS",
+          "statusCode": 200,
+          "durationMs": 31,
+          "request": {
+            "method": "POST",
+            "url": "/api/auth/reset-password",
+            "headers": {
+              "Host": "evil-attacker.com"
+            },
+            "body": {
+              "email": "user@company.com"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "message": "Email đặt lại mật khẩu đã được gửi đến hòm thư của bạn.",
+              "debugInfo": {
+                "linkGenerated": "https://my-saas-app.com/reset-password?token=jwt_secure_reset_token"
+              }
+            }
+          },
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Kiểm thử kiểu tệp tin ảnh đại diện tải lên (Avatar MIME-type check)",
+          "status": "PASS",
+          "statusCode": 415,
+          "durationMs": 42,
+          "request": {
+            "method": "POST",
+            "url": "/api/user/avatar",
+            "body": {
+              "filename": "web_shell.php",
+              "mimeType": "application/x-php",
+              "content": "<?php echo 'malicious'; ?>"
+            }
+          },
+          "response": {
+            "status": 415,
+            "body": {
+              "error": "Unsupported Media Type",
+              "message": "Hệ thống chỉ chấp nhận định dạng ảnh (PNG, JPG, WEBP)."
+            }
+          },
+          "catalog": "GENERAL"
+        }
+      ]
+    }
+  ]
+}

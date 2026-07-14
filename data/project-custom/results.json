@@ -1,0 +1,562 @@
+{
+  "lastUpdated": "2026-07-07T10:45:00.000Z",
+  "summary": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "mockServerStatus": "stopped",
+  "runs": [
+    {
+      "id": "run_1783421205000",
+      "timestamp": "2026-07-07T10:45:00.000Z",
+      "status": "completed",
+      "summary": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0
+      },
+      "testCases": [
+        {
+          "name": "Kiểm thử lỗi IDOR / BOLA (Broken Object Level Authorization)",
+          "status": "PASS",
+          "statusCode": 403,
+          "durationMs": 45,
+          "request": {
+            "method": "GET",
+            "url": "/api/user/profile/102",
+            "body": null
+          },
+          "response": {
+            "status": 403,
+            "body": {
+              "error": "Forbidden",
+              "message": "Bạn không có quyền truy cập hồ sơ của người dùng khác."
+            }
+          },
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Kiểm thử rò rỉ dữ liệu nhạy cảm trong Log lỗi (Database Error Leakage)",
+          "status": "PASS",
+          "statusCode": 500,
+          "durationMs": 14,
+          "request": {
+            "method": "GET",
+            "url": "/api/items?sort=malicious_injection_to_trigger_db_error",
+            "body": null
+          },
+          "response": {
+            "status": 500,
+            "body": {
+              "error": "Internal Server Error",
+              "message": "Đã xảy ra lỗi hệ thống. Vui lòng liên hệ quản trị viên."
+            }
+          },
+          "catalog": "SECURITY"
+        },
+        {
+          "name": "Kiểm thử cấu hình Response Headers bảo mật (Security Headers Audit)",
+          "status": "PASS",
+          "statusCode": 200,
+          "durationMs": 8,
+          "request": {
+            "method": "HEAD",
+            "url": "/",
+            "body": null
+          },
+          "response": {
+            "status": 200,
+            "headers": {
+              "X-Frame-Options": "DENY",
+              "X-Content-Type-Options": "nosniff",
+              "Content-Security-Policy": "default-src 'self'",
+              "Referrer-Policy": "no-referrer"
+            },
+            "body": null
+          },
+          "catalog": "SECURITY"
+        },
+        {
+          "name": "Kiểm thử tranh chấp tài nguyên đồng thời (Race Condition / Double Spend)",
+          "status": "PASS",
+          "statusCode": 409,
+          "durationMs": 185,
+          "request": {
+            "method": "POST",
+            "url": "/api/wallet/withdraw [Gửi song song 10 yêu cầu rút tiền]",
+            "body": {
+              "amount": 100
+            }
+          },
+          "response": {
+            "status": 409,
+            "body": {
+              "error": "Conflict",
+              "message": "Giao dịch bị từ chối do số dư thay đổi liên tục. Vui lòng thử lại."
+            }
+          },
+          "catalog": "CONCURRENCY"
+        },
+        {
+          "name": "Kiểm thử chống tải lên file độc hại (Malicious File Upload / RCE)",
+          "status": "PASS",
+          "statusCode": 415,
+          "durationMs": 64,
+          "request": {
+            "method": "POST",
+            "url": "/api/user/avatar",
+            "body": {
+              "filename": "backdoor.png.php",
+              "mimeType": "application/x-httpd-php",
+              "content": "<?php system($_GET['cmd']); ?>"
+            }
+          },
+          "response": {
+            "status": 415,
+            "body": {
+              "error": "Unsupported Media Type",
+              "message": "Định dạng file không được hỗ trợ. Chỉ cho phép tải lên file hình ảnh (PNG, JPG)."
+            }
+          },
+          "catalog": "GENERAL"
+        },
+        {
+          "name": "Kiểm thử chống tấn công SQL Injection (SQLi)",
+          "status": "PASS",
+          "statusCode": 401,
+          "durationMs": 35,
+          "request": {
+            "method": "POST",
+            "url": "/api/login",
+            "body": {
+              "email": "' OR 1=1 --",
+              "password": "random_password"
+            }
+          },
+          "response": {
+            "status": 401,
+            "body": {
+              "error": "Unauthorized",
+              "message": "Tài khoản hoặc mật khẩu không hợp lệ."
+            }
+          },
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Kiểm thử tấn suất gửi yêu cầu (Rate Limiting Protection)",
+          "status": "PASS",
+          "statusCode": 429,
+          "durationMs": 120,
+          "request": {
+            "method": "POST",
+            "url": "/api/login [Gửi liên tục 50 req/giây]",
+            "body": {
+              "email": "user@example.com",
+              "password": "wrong_password"
+            }
+          },
+          "response": {
+            "status": 429,
+            "body": {
+              "error": "Too Many Requests",
+              "message": "Quá nhiều yêu cầu đăng nhập sai. Vui lòng thử lại sau 15 phút."
+            }
+          },
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Kiểm thử lọc mã độc Cross-Site Scripting (XSS Sanitization)",
+          "status": "PASS",
+          "statusCode": 200,
+          "durationMs": 52,
+          "request": {
+            "method": "PUT",
+            "url": "/api/user/profile",
+            "body": {
+              "name": "<script>alert('XSS_MALICIOUS')</script> John Doe"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "name": "&lt;script&gt;alert('XSS_MALICIOUS')&lt;/script&gt; John Doe"
+            }
+          },
+          "catalog": "GENERAL"
+        },
+        {
+          "name": "Xác thực JWT Token hết hạn (Expired Token Check)",
+          "status": "PASS",
+          "statusCode": 401,
+          "durationMs": 12,
+          "request": {
+            "method": "GET",
+            "url": "/api/dashboard/stats",
+            "body": null
+          },
+          "response": {
+            "status": 401,
+            "body": {
+              "error": "Unauthorized",
+              "message": "JWT Token đã hết hạn. Vui lòng đăng nhập lại."
+            }
+          },
+          "catalog": "GENERAL"
+        },
+        {
+          "name": "Kiểm thử kiểu dữ liệu và định dạng JSON Schema",
+          "status": "PASS",
+          "statusCode": 400,
+          "durationMs": 28,
+          "request": {
+            "method": "POST",
+            "url": "/api/user/create",
+            "body": {
+              "email": "invalid-email-format",
+              "age": "eighteen"
+            }
+          },
+          "response": {
+            "status": 400,
+            "body": {
+              "error": "Bad Request",
+              "validationErrors": {
+                "email": "Định dạng email không hợp lệ.",
+                "age": "Trường tuổi phải là số nguyên dương."
+              }
+            }
+          },
+          "catalog": "GENERAL"
+        },
+        {
+          "name": "Kiểm thử chính sách chia trang chống treo hệ thống (Pagination DoS Protection)",
+          "status": "PASS",
+          "statusCode": 200,
+          "durationMs": 34,
+          "request": {
+            "method": "GET",
+            "url": "/api/users?limit=99999999",
+            "body": null
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "page": 1,
+              "limit": 100,
+              "message": "Số lượng bản ghi tối đa được giới hạn ở mức 100 để bảo vệ tài nguyên hệ thống.",
+              "totalItems": 450,
+              "data": []
+            }
+          },
+          "catalog": "GENERAL"
+        },
+        {
+          "name": "Kiểm thử nguồn gốc chia sẻ tài nguyên CORS (CORS Origin Policy Check)",
+          "status": "PASS",
+          "statusCode": 403,
+          "durationMs": 15,
+          "request": {
+            "method": "POST",
+            "url": "/api/transaction/transfer",
+            "headers": {
+              "Origin": "http://evil-attacker-site.com"
+            },
+            "body": {
+              "to": "12345",
+              "amount": 500
+            }
+          },
+          "response": {
+            "status": 403,
+            "body": {
+              "error": "Forbidden",
+              "message": "Origin không được cho phép thực hiện giao dịch này."
+            }
+          },
+          "catalog": "TRANSACTION"
+        }
+      ]
+    },
+    {
+      "id": "run_1783421200000",
+      "timestamp": "2026-07-07T10:35:00.000Z",
+      "status": "completed",
+      "summary": {
+        "total": 12,
+        "passed": 9,
+        "failed": 3
+      },
+      "testCases": [
+        {
+          "name": "Kiểm thử lỗi IDOR / BOLA (Broken Object Level Authorization)",
+          "status": "FAIL",
+          "statusCode": 200,
+          "durationMs": 48,
+          "request": {
+            "method": "GET",
+            "url": "/api/user/profile/102",
+            "body": null
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "id": 102,
+              "name": "Alice Smith",
+              "email": "alice@sensitive-company.com",
+              "role": "SuperAdmin",
+              "salary": 15000
+            }
+          },
+          "errorMsg": "LỖI BẢO MẬT NGHIÊM TRỌNG (IDOR): Token của người dùng ID 101 vẫn có thể lấy được dữ liệu cá nhân nhạy cảm của người dùng ID 102 mà không bị hệ thống từ chối (Kỳ vọng trả về lỗi 403 Forbidden).",
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Kiểm thử rò rỉ dữ liệu nhạy cảm trong Log lỗi (Database Error Leakage)",
+          "status": "FAIL",
+          "statusCode": 500,
+          "durationMs": 24,
+          "request": {
+            "method": "GET",
+            "url": "/api/items?sort=malicious_injection_to_trigger_db_error",
+            "body": null
+          },
+          "response": {
+            "status": 500,
+            "body": {
+              "error": "Database Error",
+              "query": "SELECT * FROM items ORDER BY malicious_injection_to_trigger_db_error",
+              "sqlState": "42703",
+              "connectionString": "postgresql://postgres:password123@localhost:5432/user_db",
+              "stack": "Error: column \"malicious_injection_to_trigger_db_error\" does not exist\n    at Client._readErrorMessage (/app/node_modules/pg/lib/client.js:290:19)\n    at Connection.emit (node:events:513:28)"
+            }
+          },
+          "errorMsg": "LỖI BẢO MẬT: Phản hồi lỗi chứa các tham số nhạy cảm bao gồm cấu trúc truy vấn SQL SQLState và rò rỉ chuỗi kết nối Database chứa mật khẩu tài khoản postgres!",
+          "catalog": "SECURITY"
+        },
+        {
+          "name": "Kiểm thử cấu hình Response Headers bảo mật (Security Headers Audit)",
+          "status": "FAIL",
+          "statusCode": 200,
+          "durationMs": 9,
+          "request": {
+            "method": "HEAD",
+            "url": "/",
+            "body": null
+          },
+          "response": {
+            "status": 200,
+            "headers": {
+              "Server": "Express",
+              "X-Powered-By": "Express"
+            },
+            "body": null
+          },
+          "errorMsg": "LỖI CẤU HÌNH MIDDLEWARE: Phát hiện thiếu các headers bảo mật nghiêm trọng (Content-Security-Policy X-Frame-Options X-Content-Type-Options) nhằm chống Clickjacking và XSS.",
+          "catalog": "SECURITY"
+        },
+        {
+          "name": "Kiểm thử tranh chấp tài nguyên đồng thời (Race Condition / Double Spend)",
+          "status": "PASS",
+          "statusCode": 409,
+          "durationMs": 178,
+          "request": {
+            "method": "POST",
+            "url": "/api/wallet/withdraw [Gửi song song 10 yêu cầu rút tiền]",
+            "body": {
+              "amount": 100
+            }
+          },
+          "response": {
+            "status": 409,
+            "body": {
+              "error": "Conflict",
+              "message": "Giao dịch bị từ chối do số dư thay đổi liên tục. Vui lòng thử lại."
+            }
+          },
+          "catalog": "CONCURRENCY"
+        },
+        {
+          "name": "Kiểm thử chống tải lên file độc hại (Malicious File Upload / RCE)",
+          "status": "PASS",
+          "statusCode": 415,
+          "durationMs": 58,
+          "request": {
+            "method": "POST",
+            "url": "/api/user/avatar",
+            "body": {
+              "filename": "backdoor.png.php",
+              "mimeType": "application/x-httpd-php",
+              "content": "<?php system($_GET['cmd']); ?>"
+            }
+          },
+          "response": {
+            "status": 415,
+            "body": {
+              "error": "Unsupported Media Type",
+              "message": "Định dạng file không được hỗ trợ. Chỉ cho phép tải lên file hình ảnh (PNG, JPG)."
+            }
+          },
+          "catalog": "GENERAL"
+        },
+        {
+          "name": "Kiểm thử chống tấn công SQL Injection (SQLi)",
+          "status": "PASS",
+          "statusCode": 401,
+          "durationMs": 32,
+          "request": {
+            "method": "POST",
+            "url": "/api/login",
+            "body": {
+              "email": "' OR 1=1 --",
+              "password": "random_password"
+            }
+          },
+          "response": {
+            "status": 401,
+            "body": {
+              "error": "Unauthorized",
+              "message": "Tài khoản hoặc mật khẩu không hợp lệ."
+            }
+          },
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Kiểm thử tần suất gửi yêu cầu (Rate Limiting Protection)",
+          "status": "PASS",
+          "statusCode": 429,
+          "durationMs": 115,
+          "request": {
+            "method": "POST",
+            "url": "/api/login [Gửi liên tục 50 req/giây]",
+            "body": {
+              "email": "user@example.com",
+              "password": "wrong_password"
+            }
+          },
+          "response": {
+            "status": 429,
+            "body": {
+              "error": "Too Many Requests",
+              "message": "Quá nhiều yêu cầu đăng nhập sai. Vui lòng thử lại sau 15 phút."
+            }
+          },
+          "catalog": "AUTH"
+        },
+        {
+          "name": "Kiểm thử lọc mã độc Cross-Site Scripting (XSS Sanitization)",
+          "status": "PASS",
+          "statusCode": 200,
+          "durationMs": 49,
+          "request": {
+            "method": "PUT",
+            "url": "/api/user/profile",
+            "body": {
+              "name": "<script>alert('XSS_MALICIOUS')</script> John Doe"
+            }
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "success": true,
+              "name": "&lt;script&gt;alert('XSS_MALICIOUS')&lt;/script&gt; John Doe"
+            }
+          },
+          "catalog": "GENERAL"
+        },
+        {
+          "name": "Xác thực JWT Token hết hạn (Expired Token Check)",
+          "status": "PASS",
+          "statusCode": 401,
+          "durationMs": 11,
+          "request": {
+            "method": "GET",
+            "url": "/api/dashboard/stats",
+            "body": null
+          },
+          "response": {
+            "status": 401,
+            "body": {
+              "error": "Unauthorized",
+              "message": "JWT Token đã hết hạn. Vui lòng đăng nhập lại."
+            }
+          },
+          "catalog": "GENERAL"
+        },
+        {
+          "name": "Kiểm thử kiểu dữ liệu và định dạng JSON Schema",
+          "status": "PASS",
+          "statusCode": 400,
+          "durationMs": 25,
+          "request": {
+            "method": "POST",
+            "url": "/api/user/create",
+            "body": {
+              "email": "invalid-email-format",
+              "age": "eighteen"
+            }
+          },
+          "response": {
+            "status": 400,
+            "body": {
+              "error": "Bad Request",
+              "validationErrors": {
+                "email": "Định dạng email không hợp lệ.",
+                "age": "Trường tuổi phải là số nguyên dương."
+              }
+            }
+          },
+          "catalog": "GENERAL"
+        },
+        {
+          "name": "Kiểm thử chính sách chia trang chống treo hệ thống (Pagination DoS Protection)",
+          "status": "PASS",
+          "statusCode": 200,
+          "durationMs": 31,
+          "request": {
+            "method": "GET",
+            "url": "/api/users?limit=99999999",
+            "body": null
+          },
+          "response": {
+            "status": 200,
+            "body": {
+              "page": 1,
+              "limit": 100,
+              "message": "Số lượng bản ghi tối đa được giới hạn ở mức 100 để bảo vệ tài nguyên hệ thống.",
+              "totalItems": 450,
+              "data": []
+            }
+          },
+          "catalog": "GENERAL"
+        },
+        {
+          "name": "Kiểm thử nguồn gốc chia sẻ tài nguyên CORS (CORS Origin Policy Check)",
+          "status": "PASS",
+          "statusCode": 403,
+          "durationMs": 14,
+          "request": {
+            "method": "POST",
+            "url": "/api/transaction/transfer",
+            "headers": {
+              "Origin": "http://evil-attacker-site.com"
+            },
+            "body": {
+              "to": "12345",
+              "amount": 500
+            }
+          },
+          "response": {
+            "status": 403,
+            "body": {
+              "error": "Forbidden",
+              "message": "Origin không được cho phép thực hiện giao dịch này."
+            }
+          },
+          "catalog": "TRANSACTION"
+        }
+      ]
+    }
+  ]
+}
