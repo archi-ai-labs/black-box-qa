@@ -1,0 +1,20 @@
+---
+description: "Guidelines for QA testing in Black-box QA Dashboard"
+alwaysApply: false
+globs: ["*"]
+---
+# Black-box QA Agent Guidelines
+
+This repository is an AI Agent Workspace for automating API and UI testing.
+
+## Workflow
+1. **Extract Context**: Scan the target project and extract specs.
+2. **Generate Tests**: Generate test cases with `TC_[CATALOG]_[NUM]` format.
+3. **Run Tests**: Trigger tests using `POST http://localhost:3080/api/run-tests` with `{ "projectId": "<id>" }` or run `npm run run-tests -- --project=<id>`.
+4. **View Results**: Check `data/<project-id>/results.json` for output.
+
+## Adding a Project
+To add a new project, edit `data/projects.json` and create the corresponding folder in `data/`.
+
+## Shared Memory
+Check `shared_memory.md` for historical bug patterns and QA rules before writing test cases.

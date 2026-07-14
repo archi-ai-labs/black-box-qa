@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 
 export async function POST(request: Request) {
   try {
@@ -10,10 +10,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Missing projectId" }, { status: 400 });
     }
 
-    // Execute the test runner with the specific project
-    const command = `npm run run-tests -- --project=${projectId}`;
-    
-    exec(command, (error, stdout, stderr) => {
+    // Input sanitization: Allow only alphanumeric, dash, and underscore
+    if (!/^[a-zA-Z0-9-_]+$/.test(projectId)) {
+      return NextResponse.json({ success: false, error: "Invalid projectId format" }, { status: 400 });
+    }
+
+    // Execute the test runner safely using execFile to prevent shell injection
+    execFile('npm', ['run', 'run-tests', '--', `--project=${projectId}`], (error, stdout, stderr) => {
       if (error) {
         console.error(`Error running tests for ${projectId}: ${error.message}`);
         return;

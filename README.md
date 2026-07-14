@@ -1,45 +1,42 @@
 # 🔍 Black-box QA Agent Dashboard
 
-> **Agentic QA Tool** — Automates black-box testing with AI Agent support (Antigravity).  
-> Built with **Next.js 15**, **TypeScript**, and integrated **Antigravity Agent Skills**.
+> **Open-Source AI Agentic QA Tool** — Automates black-box testing with AI Coding Agents (Antigravity, Cursor, Claude Code).  
+> Built with **Next.js 15**, **TypeScript**, and **Tailwind CSS**.
 
-**🌐 Language / Ngôn ngữ:** [English](./README.md) · [Tiếng Việt](./README.vi.md)
+[![npm version](https://img.shields.io/npm/v/black-box-qa.svg?style=flat)](https://www.npmjs.com/package/black-box-qa)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
-![License](https://img.shields.io/badge/license-MIT-green)
+**🌐 Language / Ngôn ngữ:** [English](./README.en.md) · [Tiếng Việt](./README.md)
 
 ---
 
-## ✨ Key Features
+## ✨ Features
 
-| Feature | Description |
-|---|---|
-| 📊 **QA Dashboard** | View test results per run, organized by Catalog (AUTH, SECURITY, RATE_LIMIT...) |
-| 🧠 **Agent Memory** | Shared Memory — AI retains error patterns and working rules across sessions |
-| 💡 **Prompt Extractor** | One-click copy of optimized prompts for AI to extract API specs or generate test cases |
-| 🖼️ **UI Test Screenshots** | View step-by-step screenshots from UI test runs (Playwright/Puppeteer) |
-| ⚡ **Auto Polling** | Dashboard auto-refreshes results every 3 seconds |
-| 🤖 **Antigravity Skills** | 2 built-in AI skills for QA context extraction and test requirement generation |
+- 🤖 **AI-Native**: Ready to be used with AI coding agents (Antigravity, Cursor, Claude).
+- 📊 **QA Dashboard**: View test results per run, organized by Catalog (AUTH, SECURITY, RATE_LIMIT...).
+- 🧠 **Agent Memory**: Shared Memory — AI retains error patterns and working rules across sessions.
+- 💡 **Prompt Extractor**: One-click copy of optimized prompts for AI to extract API specs or generate test cases.
+- ⚡ **Auto Polling**: Dashboard auto-refreshes results every 3 seconds.
 
 ---
 
 ## 🚀 Quick Start
 
-### 1. Clone & Install
+### 1. Initialize Project
+
+You can start using Black-box QA by cloning this repository:
 
 ```bash
 git clone https://github.com/archi-ai-labs/black-box-qa.git
 cd black-box-qa
-npm install
+npm run setup
 ```
 
-### 2. Configure Environment (if needed)
+*(Note: In the future, you can use `npx black-box-qa init`)*
 
-```bash
-cp .env.example .env
-# Edit .env with your project's API key or credentials
-```
+### 2. Configure Environment
+
+The `setup` script will automatically create a `.env` file. You can edit it to add your specific API keys or configurations.
 
 ### 3. Run the Dashboard
 
@@ -47,14 +44,36 @@ cp .env.example .env
 npm run dev
 ```
 
-Open your browser at [http://localhost:3000](http://localhost:3000)
+Open your browser at [http://localhost:3080](http://localhost:3080)
 
 ---
 
-## 📁 Adding a New Project
+## 🤖 Using with AI Agents
 
-### 1. Add an entry to `data/projects.json`
+This repository is designed to be a workspace for your AI coding agents.
 
+### 🟣 Cursor AI
+1. Open this repository in Cursor.
+2. Open the AI Chat (Cmd/Ctrl + L).
+3. Type: *"Write test cases for my project at [URL] and run them."*
+4. Cursor will automatically read `.cursor/rules/qa-agent.mdc` and know exactly how to structure and run tests for this dashboard.
+
+### 🔵 Google Antigravity
+1. Open this workspace in Antigravity IDE.
+2. The agent will automatically detect the skills in `.agents/skills/`.
+3. Give it a prompt: *"Please extract the QA context for my API."*
+4. It will use the built-in skills to generate requirements and execute tests.
+
+### 🟠 Claude Code
+1. Navigate to this directory in your terminal.
+2. Run `claude`.
+3. Claude will read the `CLAUDE.md` file and understand the project structure and testing commands.
+
+---
+
+## 📁 Adding a New Project Manually
+
+1. Add an entry to `data/projects.json`:
 ```json
 {
   "id": "project-myapp",
@@ -64,110 +83,16 @@ Open your browser at [http://localhost:3000](http://localhost:3000)
   "type": "api"
 }
 ```
-
-`type` can be `"api"` or `"ui-test"`.
-
-### 2. Create the results directory
-
-```bash
-mkdir -p data/project-myapp
-```
-
-### 3. AI Agent writes results to `data/project-myapp/results.json`
-
-See [`data/project-demo/results.json`](./data/project-demo/results.json) for the expected format.
+2. Create the results directory: `mkdir -p data/project-myapp`
+3. AI Agent writes results to `data/project-myapp/results.json`
 
 ---
 
-## 🗂️ Data Format (`results.json`)
+## 🤝 Contributing
 
-```json
-{
-  "lastUpdated": "2026-07-14T12:00:00.000Z",
-  "summary": { "total": 10, "passed": 9, "failed": 1 },
-  "mockServerStatus": "running",
-  "runs": [
-    {
-      "id": "run_<timestamp>",
-      "timestamp": "2026-07-14T12:00:00.000Z",
-      "status": "completed",
-      "summary": { "total": 10, "passed": 9, "failed": 1 },
-      "testCases": [
-        {
-          "name": "TC_AUTH_001: Successful login",
-          "catalog": "AUTH",
-          "status": "PASS",
-          "statusCode": 200,
-          "durationMs": 124,
-          "request": { "method": "POST", "url": "/api/login", "body": {} },
-          "response": { "status": 200, "body": {} },
-          "passCondition": "Status 200 and response contains accessToken"
-        }
-      ]
-    }
-  ]
-}
-```
-
-**Supported Catalogs:** `AUTH` · `API_KEY` · `ENERGY` · `TRANSACTION` · `SECURITY` · `RATE_LIMIT` · `CONCURRENCY` · `CLEANUP` · `HEALTH` · `GENERAL`
-
----
-
-## 🤖 Antigravity Agent Skills
-
-The `.agents/skills/` directory contains 2 skills for use with [Antigravity AI](https://antigravity.dev):
-
-### `extract-qa-context`
-Sends an optimized prompt to the AI to **extract system specifications** from a codebase (API endpoints, auth flows, request/response formats).
-
-### `extract-test-requirements`
-Sends an optimized prompt to the AI to **automatically generate test cases** grouped by Catalog, each with a defined Pass Condition.
-
-> Use the **💡 Extract Prompt** tab on the Dashboard to copy the prompt and paste it into Antigravity IDE.
-
----
-
-## 📂 Project Structure
-
-```
-black-box-qa/
-├── src/
-│   └── app/
-│       ├── page.tsx              # Main dashboard UI
-│       ├── globals.css           # Design system
-│       └── api/
-│           ├── projects/         # GET project list
-│           ├── status/           # GET test results
-│           ├── run-tests/        # POST trigger test run
-│           └── shared-memory/    # GET/POST agent memory
-├── data/
-│   ├── projects.json             # Project registry
-│   ├── project-demo/             # Sample data (mock server)
-│   ├── project-ecommerce/        # Showcase: E-Commerce API
-│   ├── project-fintech/          # Showcase: Payment Gateway
-│   ├── project-saas/             # Showcase: SaaS Access Control
-│   └── project-tronsave/         # Showcase: UI Test (Testnet)
-├── .agents/
-│   └── skills/                   # Antigravity QA Skills
-│       ├── extract-qa-context/
-│       └── extract-test-requirements/
-├── .env.example                  # Environment template
-└── README.md
-```
-
----
-
-## 🛠️ API Endpoints
-
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/api/projects` | Get project list (with lastUpdated) |
-| `GET` | `/api/status?projectId=<id>` | Get test results for a project |
-| `POST` | `/api/run-tests` | Trigger a test run (`{ projectId }`) |
-| `GET` | `/api/shared-memory` | Get agent memory content |
-
----
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to get started.
 
 ## 📄 License
 
 MIT © [archi-ai-labs](https://github.com/archi-ai-labs)
+
