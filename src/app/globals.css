@@ -24,23 +24,6 @@
   --color-info-bg: 198.6 88.7% 10%;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg-primary: 0 0% 100%; /* #ffffff */
-    --bg-secondary: 210 40% 96.1%; /* #f1f5f9 */
-    --bg-card: 0 0% 100%;
-    --border-color: 214.3 31.8% 91.4%; /* #e2e8f0 */
-    
-    --text-primary: 222.2 84% 4.9%; /* #020817 */
-    --text-secondary: 215.4 16.3% 46.9%; /* #64748b */
-    --text-muted: 215.4 16.3% 46.9%;
-    
-    --color-success-bg: 142.1 76.2% 90%;
-    --color-error-bg: 346.8 84.1% 90%;
-    --color-warning-bg: 47.9 95.8% 90%;
-    --color-info-bg: 198.6 88.7% 90%;
-  }
-}
 
 * {
   box-sizing: border-box;

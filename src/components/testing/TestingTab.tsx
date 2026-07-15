@@ -5,6 +5,7 @@ import { useTestStatus } from '../../hooks/useTestStatus';
 import { Play } from 'lucide-react';
 import { CATALOG_META } from '../../lib/constants';
 import { TestCase } from '../../lib/types';
+import { getRelativeTime } from '../../lib/utils';
 
 export default function TestingTab({ t, locale }: { t: (key: string) => any, locale: 'vi' | 'en' }) {
   const { projects, loading: projectsLoading } = useProjects();
@@ -134,6 +135,7 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
                 {data.runs.map(run => {
                   const hasFailed = run.summary.failed > 0;
                   const dateStr = new Date(run.timestamp).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                  const relTime = getRelativeTime(run.timestamp);
                   let statusText = '';
                   if (run.status === 'running') {
                     statusText = '⚡ Đang chạy...';
@@ -144,7 +146,7 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
                   }
                   return (
                     <option key={run.id} value={run.id}>
-                      {dateStr} - {statusText}
+                      {dateStr} ({relTime}) - {statusText}
                     </option>
                   );
                 })}
@@ -186,7 +188,7 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
             </div>
             
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', marginTop: '0.1rem' }}>
-              <strong>{t('testing.projectTarget')}:</strong> 
+              <strong>Cổng API:</strong> 
               <span 
                 className={`pulse-dot ${data?.isApiOnline ? '' : 'stopped'}`} 
                 style={{ 
@@ -234,7 +236,7 @@ export default function TestingTab({ t, locale }: { t: (key: string) => any, loc
                 <div>
                   <span style={{ color: '#64748b', fontWeight: '700', marginRight: '0.35rem' }}>BẮT ĐẦU:</span>
                   <span style={{ color: '#e2e8f0', fontFamily: 'monospace' }}>
-                    {new Date(activeRun.timestamp).toLocaleString('vi-VN')}
+                    {new Date(activeRun.timestamp).toLocaleString('vi-VN')} ({getRelativeTime(activeRun.timestamp)})
                   </span>
                 </div>
 
