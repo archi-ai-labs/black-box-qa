@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useProjects } from '../../hooks/useProjects';
 import { useTestStatus } from '../../hooks/useTestStatus';
@@ -9,7 +9,14 @@ import { getRelativeTime } from '../../lib/utils';
 
 export default function TestingTab({ t, locale }: { t: (key: string) => any, locale: 'vi' | 'en' }) {
   const { projects, loading: projectsLoading } = useProjects();
-  const [selectedProjectId, setSelectedProjectId] = useState<string>('project-demo');
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
+  
+  useEffect(() => {
+    if (projects && projects.length > 0 && !selectedProjectId) {
+      setSelectedProjectId(projects[0].id);
+    }
+  }, [projects, selectedProjectId]);
+
   const { data, loading: dataLoading } = useTestStatus(selectedProjectId);
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
 
