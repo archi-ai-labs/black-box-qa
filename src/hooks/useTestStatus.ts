@@ -21,7 +21,9 @@ export function useTestStatus(selectedProjectId: string) {
         const statusJson = await statusRes.json();
         if (isMounted) setData(statusJson);
       } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+        // Use console.warn instead of console.error to prevent Next.js dev overlay 
+        // from popping up repeatedly if the server is restarting or unreachable.
+        console.warn("Dashboard polling paused (server unreachable)");
       } finally {
         if (isMounted) setLoading(false);
       }
