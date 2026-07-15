@@ -6,7 +6,7 @@
     "extract": "Trích xuất Prompt"
   },
   "testing": {
-    "selectProject": "Chọn dự án",
+    "selectProject": "Dự án",
     "projectTarget": "Target",
     "mockServer": "Mock Server",
     "liveApi": "Live API",
@@ -17,7 +17,7 @@
     "runTestsBtn": "Chạy Test ngay",
     "runTestsLoading": "Đang gọi test...",
     "noProjects": "Chưa có dự án nào.",
-    "selectRun": "Lần chạy",
+    "selectRun": "Phiên chạy",
     "latest": "Mới nhất",
     "status": {
       "pass": "PASS",
